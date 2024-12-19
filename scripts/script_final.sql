@@ -17,17 +17,18 @@ CREATE TABLE ENCARGADO (
     dni VARCHAR(9) PRIMARY KEY,
     nombre VARCHAR(50),
     apellidos VARCHAR(50),
-    id_sede INT REFERENCES SEDE(id_sede)
+    id_sede INT REFERENCES SEDE(id_sede) DELETE ON CASCADE
 );
 
 -- Tabla EMPRESA
+-- El DELETE ON CASCADE, ya que cuando se elimina una sede, también se elimina la empresa
 CREATE TABLE EMPRESA (
     id_empresa SERIAL PRIMARY KEY,
     nombre VARCHAR(50),
     tipo_empresa VARCHAR(50),
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
     correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%'),
-    id_sede INT REFERENCES SEDE(id_sede)
+    id_sede INT REFERENCES SEDE(id_sede) DELETE ON CASCADE
 );
 
 -- Tabla TALLER
