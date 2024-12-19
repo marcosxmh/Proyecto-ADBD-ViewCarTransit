@@ -13,11 +13,13 @@ CREATE TABLE SEDE (
 );
 
 -- Tabla ENCARGADO
+-- id_sede es UNIQUE, ya que solo trabaja un ENCARGADO por SEDE
 CREATE TABLE ENCARGADO (
     dni VARCHAR(9) PRIMARY KEY,
     nombre VARCHAR(50),
     apellidos VARCHAR(50),
-    id_sede INT REFERENCES SEDE(id_sede) DELETE ON CASCADE
+    id_sede INT UNIQUE,
+    FOREIGN KEY (id_sede) REFERENCES SEDE(id_sede) ON DELETE CASCADE
 );
 
 -- Tabla EMPRESA
@@ -28,7 +30,8 @@ CREATE TABLE EMPRESA (
     tipo_empresa VARCHAR(50),
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
     correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%'),
-    id_sede INT REFERENCES SEDE(id_sede) DELETE ON CASCADE
+    id_sede INT,
+    FOREIGN KEY (id_sede) REFERENCES SEDE(id_sede) ON DELETE CASCADE
 );
 
 -- Tabla TALLER
@@ -66,7 +69,8 @@ CREATE TABLE PAQUETE (
     id_paquete SERIAL PRIMARY KEY,
     descripcion VARCHAR(255),
     peso DECIMAL(10,2) CHECK (peso > 0),
-    id_empresa INT REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
+    id_empresa INT,
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
 );
 
 -- Tabla CONDUCTOR
@@ -82,42 +86,48 @@ CREATE TABLE CONDUCTOR (
 CREATE TABLE TEST (
     id_test SERIAL PRIMARY KEY,
     nota DECIMAL(5,2) CHECK (nota BETWEEN 0 AND 10),
-    dni VARCHAR(9) REFERENCES CONDUCTOR(dni) DELETE ON CASCADE
+    dni VARCHAR(9),
+    FOREIGN KEY (dni) REFERENCES CONDUCTOR(dni) ON DELETE CASCADE
 );
 
 -- Tabla FURGONETA
 CREATE TABLE FURGONETA (
-    porton_lateral BOOLEAN,
+    porton_lateral BOOLEAN
 ) INHERITS (VEHICULO);
 
 -- Tabla CAMION
 CREATE TABLE CAMION (
-    tiene_trailer BOOLEAN,
+    tiene_trailer BOOLEAN
 ) INHERITS (VEHICULO);
 
 -- Relacion EMPRESA contrata VEHICULO (1:N)
 CREATE TABLE CONTRATA (
-    id_empresa INT REFERENCES EMPRESA(id_empresa) DELETE ON CASCADE,
+    id_empresa INT,
     matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
     fecha_ini DATE CHECK (fecha_ini <= fecha_fin),
     fecha_fin DATE CHECK (fecha_fin > CURRENT_DATE),
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
     PRIMARY KEY (id_empresa, matricula)
 );
 
 -- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
 CREATE TABLE ENVIA (
     matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
-    id_paquete INT REFERENCES PAQUETE(id_paquete) DELETE ON CASCADE,
-    id_empresa INT REFERENCES EMPRESA(id_empresa) DELETE ON CASCADE,
+    id_paquete INT,
+    id_empresa INT,
     destino VARCHAR(100),
     fecha DATE CHECK (fecha >= CURRENT_DATE),
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
+    FOREIGN KEY (id_paquete) REFERENCES PAQUETE(id_paquete) ON DELETE CASCADE,
     PRIMARY KEY (matricula, id_paquete)
 );
 
 -- Relacion CONDUCTOR conduce VEHICULO
 CREATE TABLE CONDUCE (
-    dni VARCHAR(20) REFERENCES CONDUCTOR(dni) DELETE ON CASCADE,
-    matricula VARCHAR(20) REFERENCES VEHICULO(matricula) DELETE ON CASCADE,
+    dni VARCHAR(9),
+    matricula VARCHAR(20),
+    FOREIGN KEY (dni) REFERENCES CONDUCTOR(dni) ON DELETE CASCADE,
+    FOREIGN KEY (matricula) REFERENCES VEHICULO(matricula) ON DELETE CASCADE,
     PRIMARY KEY (dni, matricula)
 );
 
@@ -268,6 +278,11 @@ VALUES ('Sede Central Tenerife', 'Tenerife', 'Los Majuelos', '100', '922-123-456
        ('Sede Sur Tenerife', 'Adeje', 'Sur', '200', '922-456-789', 'sur@viewcartransit.com'),
        ('Sede Norte Tenerife', 'La Orotava', 'Norte', '300', '922-789-123', 'norte@viewcartransit.com');
 
+-- Datos en ENCARGADO
+INSERT INTO ENCARGADO (dni, nombre, apellidos, id_sede)
+VALUES ('12345678A', 'Juan', 'Perez', 1),
+       ('23456789B', 'Maria', 'Lopez', 1),
+       ('34567890C', 'Pedro', 'Garcia', 3);
 -- Datos en EMPRESA
 INSERT INTO EMPRESA (nombre, tipo_empresa, telefono, correo_contacto)
 VALUES ('Supermercado La Colmena', 'Venta al por menor', '922-111-222', 'contacto@lacolmena.com'),
