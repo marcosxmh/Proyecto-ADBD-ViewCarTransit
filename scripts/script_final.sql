@@ -81,19 +81,15 @@ CREATE TABLE TEST (
     dni VARCHAR(9) REFERENCES CONDUCTOR(dni)
 );
 
--- Tabla FURGONETA (entidad debil de VEHICULO)
+-- Tabla FURGONETA
 CREATE TABLE FURGONETA (
-    matricula VARCHAR(20) PRIMARY KEY,
     porton_lateral BOOLEAN,
-    FOREIGN KEY (matricula) REFERENCES VEHICULO(matricula)
-);
+) INHERITS (VEHICULO);
 
--- Tabla CAMION (entidad debil de VEHICULO)
+-- Tabla CAMION
 CREATE TABLE CAMION (
-    matricula VARCHAR(20) PRIMARY KEY,
     tiene_trailer BOOLEAN,
-    FOREIGN KEY (matricula) REFERENCES VEHICULO(matricula)
-);
+) INHERITS (VEHICULO);
 
 -- Relacion EMPRESA contrata VEHICULO (1:N)
 CREATE TABLE CONTRATA (
