@@ -342,7 +342,7 @@ FOR EACH ROW
 EXECUTE FUNCTION verificar_sede_unica_empresa();
 
 -- Trigger añadir a vehiculo cuando se añada furgoneta
-CREATE OR REPLACE FUNCTION insertar_furgoneta_en_vehiculo()
+CREATE OR REPLACE FUNCTION insertar_en_vehiculo()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Insertamos un nuevo registro en VEHICULO tomando los datos de FURGONETA
@@ -357,7 +357,12 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_insertar_furgoneta_en_vehiculo
 BEFORE INSERT ON FURGONETA
 FOR EACH ROW
-EXECUTE FUNCTION insertar_furgoneta_en_vehiculo();
+EXECUTE FUNCTION insertar_en_vehiculo();
+CREATE TRIGGER trigger_insertar_camion_en_vehiculo
+BEFORE INSERT ON CAMION
+FOR EACH ROW
+EXECUTE FUNCTION insertar_en_vehiculo();
+
 
 
 
@@ -404,74 +409,6 @@ VALUES ('Taller Central', '922-123-456', 'Los Majuelos', 'Central', '100'),
        ('Taller Isabel', '922-333-444', 'Localidad 13', 'Calle 13', '113'),
        ('Taller Francisco', '922-444-555', 'Localidad 14', 'Calle 14', '114'),
        ('Taller Sofia', '922-555-666', 'Localidad 15', 'Calle 15', '115');
-
-INSERT INTO VEHICULO (matricula, modelo, color, estado, id_sede, id_taller)
-VALUES ('0000AAA', 'Renault Kangoo', 'Blanco', 'Disponible', 1, 1),
-    ('0000AAB', 'Mercedes Sprinter', 'Azul', 'Disponible', 1, 2),
-    ('0000AAC', 'Iveco Daily', 'Rojo', 'Disponible', 1, 2),
-    ('0000AAD', 'Scania R450', 'Negro', 'Disponible', 1, 4),
-    ('0000AAE', 'Volvo FH16', 'Gris', 'Disponible', 1, 5),
-    ('0000AAF', 'Volkswagen Crafter', 'Verde', 'Disponible', 2, 2),
-    ('0000AAG', 'Ford Transit', 'Blanco', 'Disponible', 1, 1),
-    ('0000AAH', 'Peugeot Boxer', 'Azul', 'Disponible', 1, 2),
-    ('0000AAI', 'Citroen Jumper', 'Rojo', 'Disponible', 1, 2),
-    ('0000AAJ', 'Fiat Ducato', 'Negro', 'Disponible', 1, 4),
-    ('0000AAK', 'Opel Movano', 'Gris', 'Disponible', 1, 5),
-    ('0000AAL', 'Nissan NV400', 'Verde', 'Disponible', 1, 1),
-    ('0000AAM', 'Renault Master', 'Blanco', 'Disponible', 1, 2),
-    ('0000AAN', 'Mercedes Vito', 'Azul', 'Disponible', 1, 2),
-    ('0000AAO', 'Volkswagen Transporter', 'Rojo', 'Disponible', 1, 4),
-    ('0000AAP', 'Iveco Daily', 'Negro', 'Disponible', 1, 5),
-    ('0000AAQ', 'Ford Transit Custom', 'Gris', 'Disponible', 1, 1),
-    ('0000AAR', 'Peugeot Expert', 'Verde', 'Disponible', 1, 2),
-    ('0000AAS', 'Citroen Dispatch', 'Blanco', 'Disponible', 1, 2),
-    ('0000AAT', 'Fiat Talento', 'Azul', 'Disponible', 1, 4),
-    ('0000AAU', 'Opel Vivaro', 'Rojo', 'Disponible', 1, 5),
-    ('0000AAV', 'Nissan NV300', 'Negro', 'Disponible', 1, 1),
-    ('0000AAW', 'Renault Trafic', 'Gris', 'Disponible', 1, 2),
-    ('0000AAX', 'Mercedes Citan', 'Verde', 'Disponible', 1, 2),
-    ('0000AAY', 'Volkswagen Caddy', 'Blanco', 'Disponible', 1, 4),
-    ('0000AAZ', 'Iveco Eurocargo', 'Azul', 'Disponible', 1, 5),
-    ('0000ABA', 'Ford Transit', 'Blanco', 'Disponible', 2, 6),
-    ('0000ABB', 'Peugeot Boxer', 'Azul', 'Disponible', 2, 7),
-    ('0000ABC', 'Citroen Jumper', 'Rojo', 'Disponible', 2, 8),
-    ('0000ABD', 'Fiat Ducato', 'Negro', 'Disponible', 2, 9),
-    ('0000ABE', 'Opel Movano', 'Gris', 'Disponible', 2, 10),
-    ('0000ABF', 'Nissan NV400', 'Verde', 'Disponible', 2, 11),
-    ('0000ABG', 'Renault Master', 'Blanco', 'Disponible', 2, 12),
-    ('0000ABH', 'Mercedes Vito', 'Azul', 'Disponible', 2, 13),
-    ('0000ABI', 'Volkswagen Transporter', 'Rojo', 'Disponible', 2, 14),
-    ('0000ABJ', 'Iveco Daily', 'Negro', 'Disponible', 2, 15),
-    ('0000ABK', 'Ford Transit Custom', 'Gris', 'Disponible', 2, 6),
-    ('0000ABL', 'Peugeot Expert', 'Verde', 'Disponible', 2, 7),
-    ('0000ABM', 'Citroen Dispatch', 'Blanco', 'Disponible', 2, 8),
-    ('0000ABN', 'Fiat Talento', 'Azul', 'Disponible', 2, 9),
-    ('0000ABO', 'Opel Vivaro', 'Rojo', 'Disponible', 2, 10),
-    ('0000ABP', 'Nissan NV300', 'Negro', 'Disponible', 2, 11),
-    ('0000ABQ', 'Renault Trafic', 'Gris', 'Disponible', 2, 12),
-    ('0000ABR', 'Mercedes Citan', 'Verde', 'Disponible', 2, 13),
-    ('0000ABS', 'Volkswagen Caddy', 'Blanco', 'Disponible', 2, 14),
-    ('0000ABT', 'Iveco Eurocargo', 'Azul', 'Disponible', 2, 15),
-    ('0000ABU', 'Ford Transit', 'Blanco', 'Disponible', 3, 6),
-    ('0000ABV', 'Peugeot Boxer', 'Azul', 'Disponible', 3, 7),
-    ('0000ABW', 'Citroen Jumper', 'Rojo', 'Disponible', 3, 8),
-    ('0000ABX', 'Fiat Ducato', 'Negro', 'Disponible', 3, 9),
-    ('0000ABY', 'Opel Movano', 'Gris', 'Disponible', 3, 10),
-    ('0000ABZ', 'Nissan NV400', 'Verde', 'Disponible', 3, 11),
-    ('0000ACA', 'Renault Master', 'Blanco', 'Disponible', 3, 12),
-    ('0000ACB', 'Mercedes Vito', 'Azul', 'Disponible', 3, 13),
-    ('0000ACC', 'Volkswagen Transporter', 'Rojo', 'Disponible', 3, 14),
-    ('0000ACD', 'Iveco Daily', 'Negro', 'Disponible', 3, 15),
-    ('0000ACE', 'Ford Transit Custom', 'Gris', 'Disponible', 3, 6),
-    ('0000ACF', 'Peugeot Expert', 'Verde', 'Disponible', 3, 7),
-    ('0000ACG', 'Citroen Dispatch', 'Blanco', 'Disponible', 3, 8),
-    ('0000ACH', 'Fiat Talento', 'Azul', 'Disponible', 3, 9),
-    ('0000ACI', 'Opel Vivaro', 'Rojo', 'Disponible', 3, 10),
-    ('0000ACJ', 'Nissan NV300', 'Negro', 'Disponible', 3, 11),
-    ('0000ACK', 'Renault Trafic', 'Gris', 'Disponible', 3, 12),
-    ('0000ACL', 'Mercedes Citan', 'Verde', 'Disponible', 3, 13),
-    ('0000ACM', 'Volkswagen Caddy', 'Blanco', 'Disponible', 3, 14),
-    ('0000ACN', 'Iveco Eurocargo', 'Azul', 'Disponible', 3, 15);
 
 -- Datos en FURGONETA
 INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
