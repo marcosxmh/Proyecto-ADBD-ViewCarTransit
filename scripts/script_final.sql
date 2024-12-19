@@ -16,9 +16,9 @@ CREATE TABLE SEDE (
 -- id_sede es UNIQUE, ya que solo trabaja un ENCARGADO por SEDE
 CREATE TABLE ENCARGADO (
     dni VARCHAR(9) PRIMARY KEY,
-    nombre VARCHAR(50),
-    apellidos VARCHAR(50),
-    id_sede INT UNIQUE,
+    nombre VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    id_sede INT UNIQUE NOT NULL,
     FOREIGN KEY (id_sede) REFERENCES SEDE(id_sede) ON DELETE CASCADE
 );
 
@@ -26,97 +26,97 @@ CREATE TABLE ENCARGADO (
 -- El DELETE ON CASCADE, ya que cuando se elimina una sede, también se elimina la empresa
 CREATE TABLE EMPRESA (
     id_empresa SERIAL PRIMARY KEY,
-    nombre VARCHAR(50),
-    tipo_empresa VARCHAR(50),
+    nombre VARCHAR(50) NOT NULL,
+    tipo_empresa VARCHAR(50) NOT NULL,
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
     correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%'),
-    id_sede INT,
+    id_sede INT NOT NULL,
     FOREIGN KEY (id_sede) REFERENCES SEDE(id_sede) ON DELETE CASCADE
 );
 
 -- Tabla TALLER
 CREATE TABLE TALLER (
     id_taller SERIAL PRIMARY KEY,
-    nombre VARCHAR(50),
+    nombre VARCHAR(50) NOT NULL,
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
-    localidad VARCHAR(50),
-    calle VARCHAR(50),
-    numero VARCHAR(10)
+    localidad VARCHAR(50) NOT NULL,
+    calle VARCHAR(50) NOT NULL,
+    numero VARCHAR(10) NOT NULL
 );
 
 -- Tabla VEHICULO
 CREATE TABLE VEHICULO (
     matricula VARCHAR(20) PRIMARY KEY,
-    modelo VARCHAR(50),
+    modelo VARCHAR(50) NOT NULL,
     color VARCHAR(20),
     estado VARCHAR(20) CHECK (estado IN ('Disponible', 'No disponible', 'En taller')),
-    id_sede INT REFERENCES SEDE(id_sede),
-    id_taller INT REFERENCES TALLER(id_taller)
+    id_sede INT NOT NULL REFERENCES SEDE(id_sede),
+    id_taller INT NOT NULL REFERENCES TALLER(id_taller)
 );
 
 -- Tabla INFORME
 -- DELETE ON SET NULL, ya que aunque se elimine el taller, queremos mantener el informe
 CREATE TABLE INFORME (
     id_informe SERIAL PRIMARY KEY,
-    fecha DATE CHECK (fecha <= CURRENT_DATE),
-    nombre VARCHAR(50),
-    apellidos VARCHAR(50),
-    id_taller INT REFERENCES TALLER(id_taller) ON DELETE SET NULL
+    fecha DATE NOT NULL CHECK (fecha <= CURRENT_DATE),
+    nombre VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    id_taller INT NOT NULL REFERENCES TALLER(id_taller) ON DELETE SET NULL
 );
 
 -- Tabla PAQUETE
 CREATE TABLE PAQUETE (
     id_paquete SERIAL PRIMARY KEY,
     descripcion VARCHAR(255),
-    peso DECIMAL(10,2) CHECK (peso > 0),
-    id_empresa INT,
+    peso DECIMAL(10,2) NOT NULL CHECK (peso > 0),
+    id_empresa INT NOT NULL,
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
 );
 
 -- Tabla CONDUCTOR
 CREATE TABLE CONDUCTOR (
     dni VARCHAR(9) PRIMARY KEY,
-    nombre VARCHAR(50),
-    apellidos VARCHAR(50),
-    licencia VARCHAR(50)
+    nombre VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    licencia VARCHAR(50) NOT NULL CHECK (licencia IN ('B', 'C', 'C+E'))
 );
 
 -- Tabla TEST
 -- Si se elimina el conductor que se elimine su test
 CREATE TABLE TEST (
     id_test SERIAL PRIMARY KEY,
-    nota DECIMAL(5,2) CHECK (nota BETWEEN 0 AND 10),
-    dni VARCHAR(9),
+    nota DECIMAL(5,2) NOT NULL CHECK (nota BETWEEN 0 AND 10),
+    dni VARCHAR(9) NOT NULL,
     FOREIGN KEY (dni) REFERENCES CONDUCTOR(dni) ON DELETE CASCADE
 );
 
 -- Tabla FURGONETA
 CREATE TABLE FURGONETA (
-    porton_lateral BOOLEAN
+    porton_lateral BOOLEAN NOT NULL
 ) INHERITS (VEHICULO);
 
 -- Tabla CAMION
 CREATE TABLE CAMION (
-    tiene_trailer BOOLEAN
+    tiene_trailer BOOLEAN NOT NULL
 ) INHERITS (VEHICULO);
 
 -- Relacion EMPRESA contrata VEHICULO (1:N)
 CREATE TABLE CONTRATA (
-    id_empresa INT,
-    matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
-    fecha_ini DATE CHECK (fecha_ini <= fecha_fin),
-    fecha_fin DATE CHECK (fecha_fin > CURRENT_DATE),
+    id_empresa INT NOT NULL,
+    matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
+    fecha_ini DATE NOT NULL CHECK (fecha_ini <= fecha_fin),
+    fecha_fin DATE NOT NULL CHECK (fecha_fin > CURRENT_DATE),
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
     PRIMARY KEY (id_empresa, matricula)
 );
 
 -- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
 CREATE TABLE ENVIA (
-    matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
-    id_paquete INT,
-    id_empresa INT,
-    destino VARCHAR(100),
-    fecha DATE CHECK (fecha >= CURRENT_DATE),
+    matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
+    id_paquete INT NOT NULL,
+    id_empresa INT NOT NULL,
+    destino VARCHAR(100) NOT NULL,
+    fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
     FOREIGN KEY (id_paquete) REFERENCES PAQUETE(id_paquete) ON DELETE CASCADE,
     PRIMARY KEY (matricula, id_paquete)
@@ -124,8 +124,8 @@ CREATE TABLE ENVIA (
 
 -- Relacion CONDUCTOR conduce VEHICULO
 CREATE TABLE CONDUCE (
-    dni VARCHAR(9),
-    matricula VARCHAR(20),
+    dni VARCHAR(9) NOT NULL,
+    matricula VARCHAR(20) NOT NULL,
     FOREIGN KEY (dni) REFERENCES CONDUCTOR(dni) ON DELETE CASCADE,
     FOREIGN KEY (matricula) REFERENCES VEHICULO(matricula) ON DELETE CASCADE,
     PRIMARY KEY (dni, matricula)
@@ -281,8 +281,9 @@ VALUES ('Sede Central Tenerife', 'Tenerife', 'Los Majuelos', '100', '922-123-456
 -- Datos en ENCARGADO
 INSERT INTO ENCARGADO (dni, nombre, apellidos, id_sede)
 VALUES ('12345678A', 'Juan', 'Perez', 1),
-       ('23456789B', 'Maria', 'Lopez', 1),
+       ('23456789B', 'Maria', 'Lopez', 2),
        ('34567890C', 'Pedro', 'Garcia', 3);
+
 -- Datos en EMPRESA
 INSERT INTO EMPRESA (nombre, tipo_empresa, telefono, correo_contacto)
 VALUES ('Supermercado La Colmena', 'Venta al por menor', '922-111-222', 'contacto@lacolmena.com'),
