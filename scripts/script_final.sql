@@ -114,10 +114,10 @@ CREATE TABLE ENVIA (
     PRIMARY KEY (matricula, id_paquete)
 );
 
--- Relacion CONDUCTOR conduce VEHICULO (1:1)
+-- Relacion CONDUCTOR conduce VEHICULO
 CREATE TABLE CONDUCE (
-    dni VARCHAR(20) REFERENCES CONDUCTOR(dni),
-    matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
+    dni VARCHAR(20) REFERENCES CONDUCTOR(dni) DELETE ON CASCADE,
+    matricula VARCHAR(20) REFERENCES VEHICULO(matricula) DELETE ON CASCADE,
     PRIMARY KEY (dni, matricula)
 );
 
