@@ -100,14 +100,14 @@ CREATE TABLE CAMION (
     tiene_trailer BOOLEAN NOT NULL
 ) INHERITS (VEHICULO);
 
--- Relacion EMPRESA contrata VEHICULO (1:N)
-CREATE TABLE CONTRATA (
+-- Tabla CONTRATO
+CREATE TABLE CONTRATO (
+    id_contrato SERIAL PRIMARY KEY,
     id_empresa INT NOT NULL,
     matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
     fecha_ini DATE NOT NULL CHECK (fecha_ini <= fecha_fin),
     fecha_fin DATE NOT NULL CHECK (fecha_fin > CURRENT_DATE),
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
-    PRIMARY KEY (id_empresa, matricula)
 );
 
 -- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
@@ -135,7 +135,7 @@ CREATE TABLE CONDUCE (
 CREATE OR REPLACE FUNCTION check_vehiculo_disponible()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF (SELECT estado FROM VEHICULO WHERE matricula = NEW.matricula) != 'Disponible' THEN
+    IF (SELECT estado FROM VEHICULO WHERE matricula = NEW.matricula LIMIT 1) != 'Disponible' THEN
         RAISE EXCEPTION 'El vehiculo no esta disponible';
     END IF;
     RETURN NEW;
@@ -143,7 +143,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_vehiculo_disponible
-BEFORE INSERT ON CONTRATA
+BEFORE INSERT ON CONTRATO
 FOR EACH ROW
 EXECUTE FUNCTION check_vehiculo_disponible();
 
@@ -153,10 +153,10 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM CONTRATA
-        WHERE CONTRATA.id_empresa = NEW.id_empresa
-          AND CONTRATA.matricula = NEW.matricula
-          AND NEW.fecha BETWEEN CONTRATA.fecha_ini AND CONTRATA.fecha_fin
+        FROM CONTRATO
+        WHERE CONTRATO.id_empresa = NEW.id_empresa
+          AND CONTRATO.matricula = NEW.matricula
+          AND NEW.fecha BETWEEN CONTRATO.fecha_ini AND CONTRATO.fecha_fin
     ) THEN
         RAISE EXCEPTION 'La empresa no tiene contratado este vehículo para le fecha de reparto.';
     END IF;
@@ -165,7 +165,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER verifica_contrata
+CREATE TRIGGER verifica_contrato
 BEFORE INSERT OR UPDATE ON ENVIA
 FOR EACH ROW
 EXECUTE FUNCTION valida_envia_vehiculo();
@@ -227,7 +227,7 @@ BEFORE DELETE ON TALLER
 FOR EACH ROW
 EXECUTE FUNCTION reasignar_taller_a_vehiculos();
 
--- Trigger para reasignar un vehículo cuando se elimina o pasa al taller, en la table ENVIA y CONTRATA
+-- Trigger para reasignar un vehículo cuando se elimina o pasa al taller, en la table ENVIA y CONTRATO
 CREATE OR REPLACE FUNCTION reasignar_vehiculo()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -242,7 +242,7 @@ BEGIN
 
     IF nuevo_vehiculo IS NOT NULL THEN
         -- Actualizamos el contrato y los envios pendientes
-        UPDATE CONTRATA
+        UPDATE CONTRATO
         SET matricula = nuevo_vehiculo
         WHERE matricula = OLD.matricula;
 
@@ -266,20 +266,6 @@ FOR EACH ROW
 WHEN (OLD.estado = 'Disponible' OR OLD.estado = 'En taller')  -- Se activa cuando el vehículo se elimina o pasa a "En taller"
 EXECUTE FUNCTION reasignar_vehiculo();
 
--- Trigger para evitar inserciones directas en VEHICULO
-CREATE OR REPLACE FUNCTION prevent_insert_into_vehiculo()
-RETURNS TRIGGER AS $$
-BEGIN
-    RAISE EXCEPTION 'No se pueden insertar datos directamente en VEHICULO';
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
--- Crear el trigger
-CREATE TRIGGER prevent_insert_trigger
-    BEFORE INSERT ON VEHICULO
-    FOR EACH ROW
-    EXECUTE FUNCTION prevent_insert_into_vehiculo();
 
 
 
@@ -330,6 +316,74 @@ VALUES ('Taller Central', '922-123-456', 'Los Majuelos', 'Central', '100'),
        ('Taller Isabel', '922-333-444', 'Localidad 13', 'Calle 13', '113'),
        ('Taller Francisco', '922-444-555', 'Localidad 14', 'Calle 14', '114'),
        ('Taller Sofia', '922-555-666', 'Localidad 15', 'Calle 15', '115');
+
+INSERT INTO VEHICULO (matricula, modelo, color, estado, id_sede, id_taller)
+VALUES ('0000AAA', 'Renault Kangoo', 'Blanco', 'Disponible', 1, 1),
+    ('0000AAB', 'Mercedes Sprinter', 'Azul', 'Disponible', 1, 2),
+    ('0000AAC', 'Iveco Daily', 'Rojo', 'Disponible', 1, 2),
+    ('0000AAD', 'Scania R450', 'Negro', 'Disponible', 1, 4),
+    ('0000AAE', 'Volvo FH16', 'Gris', 'Disponible', 1, 5),
+    ('0000AAF', 'Volkswagen Crafter', 'Verde', 'Disponible', 2, 2),
+    ('0000AAG', 'Ford Transit', 'Blanco', 'Disponible', 1, 1),
+    ('0000AAH', 'Peugeot Boxer', 'Azul', 'Disponible', 1, 2),
+    ('0000AAI', 'Citroen Jumper', 'Rojo', 'Disponible', 1, 2),
+    ('0000AAJ', 'Fiat Ducato', 'Negro', 'Disponible', 1, 4),
+    ('0000AAK', 'Opel Movano', 'Gris', 'Disponible', 1, 5),
+    ('0000AAL', 'Nissan NV400', 'Verde', 'Disponible', 1, 1),
+    ('0000AAM', 'Renault Master', 'Blanco', 'Disponible', 1, 2),
+    ('0000AAN', 'Mercedes Vito', 'Azul', 'Disponible', 1, 2),
+    ('0000AAO', 'Volkswagen Transporter', 'Rojo', 'Disponible', 1, 4),
+    ('0000AAP', 'Iveco Daily', 'Negro', 'Disponible', 1, 5),
+    ('0000AAQ', 'Ford Transit Custom', 'Gris', 'Disponible', 1, 1),
+    ('0000AAR', 'Peugeot Expert', 'Verde', 'Disponible', 1, 2),
+    ('0000AAS', 'Citroen Dispatch', 'Blanco', 'Disponible', 1, 2),
+    ('0000AAT', 'Fiat Talento', 'Azul', 'Disponible', 1, 4),
+    ('0000AAU', 'Opel Vivaro', 'Rojo', 'Disponible', 1, 5),
+    ('0000AAV', 'Nissan NV300', 'Negro', 'Disponible', 1, 1),
+    ('0000AAW', 'Renault Trafic', 'Gris', 'Disponible', 1, 2),
+    ('0000AAX', 'Mercedes Citan', 'Verde', 'Disponible', 1, 2),
+    ('0000AAY', 'Volkswagen Caddy', 'Blanco', 'Disponible', 1, 4),
+    ('0000AAZ', 'Iveco Eurocargo', 'Azul', 'Disponible', 1, 5),
+    ('0000ABA', 'Ford Transit', 'Blanco', 'Disponible', 2, 6),
+    ('0000ABB', 'Peugeot Boxer', 'Azul', 'Disponible', 2, 7),
+    ('0000ABC', 'Citroen Jumper', 'Rojo', 'Disponible', 2, 8),
+    ('0000ABD', 'Fiat Ducato', 'Negro', 'Disponible', 2, 9),
+    ('0000ABE', 'Opel Movano', 'Gris', 'Disponible', 2, 10),
+    ('0000ABF', 'Nissan NV400', 'Verde', 'Disponible', 2, 11),
+    ('0000ABG', 'Renault Master', 'Blanco', 'Disponible', 2, 12),
+    ('0000ABH', 'Mercedes Vito', 'Azul', 'Disponible', 2, 13),
+    ('0000ABI', 'Volkswagen Transporter', 'Rojo', 'Disponible', 2, 14),
+    ('0000ABJ', 'Iveco Daily', 'Negro', 'Disponible', 2, 15),
+    ('0000ABK', 'Ford Transit Custom', 'Gris', 'Disponible', 2, 6),
+    ('0000ABL', 'Peugeot Expert', 'Verde', 'Disponible', 2, 7),
+    ('0000ABM', 'Citroen Dispatch', 'Blanco', 'Disponible', 2, 8),
+    ('0000ABN', 'Fiat Talento', 'Azul', 'Disponible', 2, 9),
+    ('0000ABO', 'Opel Vivaro', 'Rojo', 'Disponible', 2, 10),
+    ('0000ABP', 'Nissan NV300', 'Negro', 'Disponible', 2, 11),
+    ('0000ABQ', 'Renault Trafic', 'Gris', 'Disponible', 2, 12),
+    ('0000ABR', 'Mercedes Citan', 'Verde', 'Disponible', 2, 13),
+    ('0000ABS', 'Volkswagen Caddy', 'Blanco', 'Disponible', 2, 14),
+    ('0000ABT', 'Iveco Eurocargo', 'Azul', 'Disponible', 2, 15),
+    ('0000ABU', 'Ford Transit', 'Blanco', 'Disponible', 3, 6),
+    ('0000ABV', 'Peugeot Boxer', 'Azul', 'Disponible', 3, 7),
+    ('0000ABW', 'Citroen Jumper', 'Rojo', 'Disponible', 3, 8),
+    ('0000ABX', 'Fiat Ducato', 'Negro', 'Disponible', 3, 9),
+    ('0000ABY', 'Opel Movano', 'Gris', 'Disponible', 3, 10),
+    ('0000ABZ', 'Nissan NV400', 'Verde', 'Disponible', 3, 11),
+    ('0000ACA', 'Renault Master', 'Blanco', 'Disponible', 3, 12),
+    ('0000ACB', 'Mercedes Vito', 'Azul', 'Disponible', 3, 13),
+    ('0000ACC', 'Volkswagen Transporter', 'Rojo', 'Disponible', 3, 14),
+    ('0000ACD', 'Iveco Daily', 'Negro', 'Disponible', 3, 15),
+    ('0000ACE', 'Ford Transit Custom', 'Gris', 'Disponible', 3, 6),
+    ('0000ACF', 'Peugeot Expert', 'Verde', 'Disponible', 3, 7),
+    ('0000ACG', 'Citroen Dispatch', 'Blanco', 'Disponible', 3, 8),
+    ('0000ACH', 'Fiat Talento', 'Azul', 'Disponible', 3, 9),
+    ('0000ACI', 'Opel Vivaro', 'Rojo', 'Disponible', 3, 10),
+    ('0000ACJ', 'Nissan NV300', 'Negro', 'Disponible', 3, 11),
+    ('0000ACK', 'Renault Trafic', 'Gris', 'Disponible', 3, 12),
+    ('0000ACL', 'Mercedes Citan', 'Verde', 'Disponible', 3, 13),
+    ('0000ACM', 'Volkswagen Caddy', 'Blanco', 'Disponible', 3, 14),
+    ('0000ACN', 'Iveco Eurocargo', 'Azul', 'Disponible', 3, 15);
 
 -- Datos en FURGONETA
 INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
@@ -403,8 +457,8 @@ VALUES ('0000ABF', 'Nissan NV400', 'Verde', 'Disponible', 2, 11, TRUE),
     ('0000ACM', 'Volkswagen Caddy', 'Blanco', 'Disponible', 3, 14, FALSE),
     ('0000ACN', 'Iveco Eurocargo', 'Azul', 'Disponible', 3, 15, TRUE);
 
--- Datos en CONTRATA
-INSERT INTO CONTRATA (id_empresa, matricula, fecha_ini, fecha_fin)
+-- Datos en CONTRATO
+INSERT INTO CONTRATO (id_empresa, matricula, fecha_ini, fecha_fin)
 VALUES (1, '0000AAA', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (2, '0000AAB', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (3, '0000AAC', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
@@ -425,11 +479,11 @@ VALUES (1, '0000AAA', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (3, '0000AAR', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (4, '0000AAS', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (5, '0000AAT', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
-    (4, '0000AAD', CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '2 months'),
-    (5, '0000AAE', CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '2 months'),
-    (1, '0000AAF', CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '2 months'),
-    (2, '0000AAG', CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '2 months'),
-    (3, '0000AAH', CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '2 months');
+    (4, '0000AAD', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (5, '0000AAE', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (1, '0000AAF', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (2, '0000AAG', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (3, '0000AAH', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months');
 
 -- Datos en PAQUETE
 INSERT INTO PAQUETE (descripcion, peso, id_empresa)
