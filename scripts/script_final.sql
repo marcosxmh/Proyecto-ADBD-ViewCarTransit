@@ -49,7 +49,7 @@ CREATE TABLE VEHICULO (
     matricula VARCHAR(20) PRIMARY KEY,
     modelo VARCHAR(50) NOT NULL,
     color VARCHAR(20),
-    estado VARCHAR(20) CHECK (estado IN ('Disponible', 'En Taller')),
+    estado VARCHAR(10) CHECK (estado IN ('Disponible', 'En Taller')),
     id_sede INT NOT NULL REFERENCES SEDE(id_sede),
     id_taller INT REFERENCES TALLER(id_taller)
 );
@@ -253,21 +253,22 @@ BEFORE DELETE ON TALLER
 FOR EACH ROW
 EXECUTE FUNCTION reasignar_taller_a_vehiculos();
 
--- Trigger para reasignar un vehículo cuando se elimina o pasa al taller, en la table ENVIA y CONTRATO
-CREATE OR REPLACE FUNCTION reasignar_vehiculo()
+-- Trigger para reasignar una furgoneta cuando se elimina o pasa al taller, en la table ENVIA y CONTRATO
+CREATE OR REPLACE FUNCTION reasignar_furgoneta()
 RETURNS TRIGGER AS $$
 DECLARE
-    vehiculo_disponible VEHICULO%ROWTYPE;
+    furgoneta_disponible FURGONETA%ROWTYPE;
 BEGIN
     -- Seleccionamos un vehículo disponible que no tenga contrato activo
     SELECT matricula
-    INTO vehiculo_disponible
-    FROM VEHICULO v
-    WHERE v.estado = 'Disponible'
+    INTO furgoneta_disponible
+    FROM FURGONETA f
+    WHERE f.estado = 'Disponible'
     AND NOT EXISTS (
         SELECT 1
         FROM CONTRATO c
-        WHERE c.matricula = v.matricula
+        WHERE c.matricula = f.matricula
+        AND f.porton_lateral = OLD.porton_lateral
         AND c.fecha_ini <= CURRENT_DATE
         AND c.fecha_fin >= CURRENT_DATE
     )
@@ -276,25 +277,71 @@ BEGIN
     -- Si encontramos un vehículo disponible sin contrato activo, actualizamos su estado
     IF FOUND THEN
         UPDATE CONTRATO
-        SET matricula = vehiculo_disponible.matricula
+        SET matricula = furgoneta_disponible.matricula
         WHERE matricula = OLD.matricula;
         UPDATE ENVIA
-        SET matricula = vehiculo_disponible.matricula
+        SET matricula = furgoneta_disponible.matricula
         WHERE matricula = OLD.matricula;
+        
     END IF;
 
     RETURN NULL; -- No necesitamos hacer nada con la fila eliminada
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_reasignar_vehiculo
-BEFORE DELETE ON VEHICULO
+CREATE TRIGGER trigger_reasignar_furgoneta
+AFTER DELETE ON FURGONETA
 FOR EACH ROW
-EXECUTE FUNCTION reasignar_vehiculo();
-CREATE TRIGGER trigger_reasignar_vehiculo_en_taller
-BEFORE UPDATE OF estado ON VEHICULO
+EXECUTE FUNCTION reasignar_furgoneta();
+CREATE TRIGGER trigger_reasignar_furgoneta_en_taller
+AFTER UPDATE OF estado ON FURGONETA
 FOR EACH ROW
-EXECUTE FUNCTION reasignar_vehiculo();
+EXECUTE FUNCTION reasignar_furgoneta();
+
+-- Trigger para reasignar un camion cuando se elimina o pasa al taller, en la table ENVIA y CONTRATO
+CREATE OR REPLACE FUNCTION reasignar_camion()
+RETURNS TRIGGER AS $$
+DECLARE
+    camion_disponible CAMION%ROWTYPE;
+BEGIN
+    -- Seleccionamos un vehículo disponible que no tenga contrato activo
+    SELECT matricula
+    INTO camion_disponible
+    FROM CAMION ca
+    WHERE ca.estado = 'Disponible'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM CONTRATO c
+        WHERE c.matricula = ca.matricula
+        AND ca.tiene_trailer = OLD.tiene_trailer
+        AND c.fecha_ini <= CURRENT_DATE
+        AND c.fecha_fin >= CURRENT_DATE
+    )
+    LIMIT 1; -- Se asegura de obtener solo un vehículo
+
+    -- Si encontramos un vehículo disponible sin contrato activo, actualizamos su estado
+    IF FOUND THEN
+        UPDATE CONTRATO
+        SET matricula = camion_disponible.matricula
+        WHERE matricula = OLD.matricula;
+        UPDATE ENVIA
+        SET matricula = camion_disponible.matricula
+        WHERE matricula = OLD.matricula;
+        
+    END IF;
+
+    RETURN NULL; -- No necesitamos hacer nada con la fila eliminada
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_reasignar_camion
+AFTER DELETE ON CAMION
+FOR EACH ROW
+EXECUTE FUNCTION reasignar_camion();
+CREATE TRIGGER trigger_reasignar_camion_en_taller
+AFTER UPDATE OF estado ON CAMION
+FOR EACH ROW
+EXECUTE FUNCTION reasignar_camion();
 
 -- Trigger Vehículo solo puede pertenecer a una sede
 CREATE OR REPLACE FUNCTION verificar_sede_vehiculo()
@@ -341,15 +388,13 @@ BEFORE UPDATE ON EMPRESA
 FOR EACH ROW
 EXECUTE FUNCTION verificar_sede_unica_empresa();
 
--- Trigger añadir a vehiculo cuando se añada furgoneta
+-- Trigger añadir a vehiculo cuando se añade furgoneta o camion
 CREATE OR REPLACE FUNCTION insertar_en_vehiculo()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Insertamos un nuevo registro en VEHICULO tomando los datos de FURGONETA
+    -- Insertamos un nuevo registro en VEHICULO tomando los datos de
     INSERT INTO VEHICULO (matricula, modelo, color, estado, id_sede, id_taller)
     VALUES (NEW.matricula, NEW.modelo, NEW.color, NEW.estado, NEW.id_sede, NEW.id_taller);
-
-    -- Devolvemos el nuevo registro insertado en FURGONETA
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -363,7 +408,22 @@ BEFORE INSERT ON CAMION
 FOR EACH ROW
 EXECUTE FUNCTION insertar_en_vehiculo();
 
+-- Trigger para eliminar de vehiculo cuando se elimine una furgoneta o camion
+CREATE OR REPLACE FUNCTION eliminar_de_vehiculo()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Eliminamos el registro correspondiente de la tabla VEHICULO
+    DELETE FROM VEHICULO WHERE matricula = OLD.matricula;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER trigger_eliminar_furgoneta_de_vehiculo
+BEFORE DELETE ON FURGONETA
+EXECUTE FUNCTION eliminar_de_vehiculo();
+CREATE TRIGGER trigger_eliminar_camion_de_vehiculo
+BEFORE DELETE ON CAMION
+EXECUTE FUNCTION eliminar_de_vehiculo();
 
 
 -- Insertar datos iniciales
@@ -509,7 +569,10 @@ VALUES (4, '0000AAD', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURR
     (5, '0000AAE', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
     (1, '0000AAF', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
     (2, '0000AAG', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
-    (3, '0000AAH', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months');
+    (3, '0000AAH', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (3, '0000ACK', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (1, '0000ACM', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (2, '0000ACN', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months');
 
 -- Datos en PAQUETE
 INSERT INTO PAQUETE (descripcion, peso, id_empresa)
@@ -576,14 +639,14 @@ VALUES ('0000AAA', 1, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 da
     ('0000AAR', 18, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '18 days'),
     ('0000AAS', 19, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '19 days'),
     ('0000AAT', 20, 5, 'Güímar', CURRENT_DATE + INTERVAL '20 days'),
-    ('0000AAF', 21, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '21 days'),
-    ('0000AAG', 22, 2, 'La Laguna', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '22 days'),
-    ('0000AAH', 23, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '23 days'),
+    ('0000ACM', 21, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '21 days'),
+    ('0000ACN', 22, 2, 'La Laguna', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '22 days'),
+    ('0000ACK', 23, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '23 days'),
     ('0000AAD', 24, 4, 'Arona', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '24 days'),
     ('0000AAE', 25, 5, 'Granadilla', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '25 days'),
-    ('0000AAF', 26, 1, 'Adeje', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '26 days'),
-    ('0000AAG', 27, 2, 'La Orotava', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '27 days'),
-    ('0000AAH', 28, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '28 days'),
+    ('0000ACM', 26, 1, 'Adeje', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '26 days'),
+    ('0000ACN', 27, 2, 'La Orotava', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '27 days'),
+    ('0000ACK', 28, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '28 days'),
     ('0000AAD', 29, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '29 days'),
     ('0000AAE', 30, 5, 'Güímar', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '30 days');
 
