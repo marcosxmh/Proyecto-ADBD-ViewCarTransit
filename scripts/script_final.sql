@@ -51,7 +51,7 @@ CREATE TABLE VEHICULO (
     color VARCHAR(20),
     estado VARCHAR(20) CHECK (estado IN ('Disponible', 'En Taller')),
     id_sede INT NOT NULL REFERENCES SEDE(id_sede),
-    id_taller INT NOT NULL REFERENCES TALLER(id_taller)
+    id_taller INT REFERENCES TALLER(id_taller)
 );
 
 -- Tabla INFORME
@@ -61,7 +61,7 @@ CREATE TABLE INFORME (
     fecha DATE NOT NULL CHECK (fecha <= CURRENT_DATE),
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
-    id_taller INT NOT NULL REFERENCES TALLER(id_taller) ON DELETE SET NULL
+    id_taller INT REFERENCES TALLER(id_taller) ON DELETE SET NULL
 );
 
 -- Tabla PAQUETE
@@ -255,39 +255,43 @@ EXECUTE FUNCTION reasignar_taller_a_vehiculos();
 CREATE OR REPLACE FUNCTION reasignar_vehiculo()
 RETURNS TRIGGER AS $$
 DECLARE
-    nuevo_vehiculo VARCHAR(20);
+    vehiculo_disponible VEHICULO%ROWTYPE;
 BEGIN
-    -- Buscar un vehículo disponible en la flota
+    -- Seleccionamos un vehículo disponible que no tenga contrato activo
     SELECT matricula
-    INTO nuevo_vehiculo
-    FROM VEHICULO
-    WHERE estado = 'Disponible'
-    LIMIT 1;  -- Tomamos solo uno disponible
+    INTO vehiculo_disponible
+    FROM VEHICULO v
+    WHERE v.estado = 'Disponible'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM CONTRATO c
+        WHERE c.matricula = v.matricula
+        AND c.fecha_ini <= CURRENT_DATE
+        AND c.fecha_fin >= CURRENT_DATE
+    )
+    LIMIT 1; -- Se asegura de obtener solo un vehículo
 
-    IF nuevo_vehiculo IS NOT NULL THEN
-        -- Actualizamos el contrato y los envios pendientes
+    -- Si encontramos un vehículo disponible sin contrato activo, actualizamos su estado
+    IF FOUND THEN
         UPDATE CONTRATO
-        SET matricula = nuevo_vehiculo
+        SET matricula = vehiculo_disponible.matricula
         WHERE matricula = OLD.matricula;
-
         UPDATE ENVIA
-        SET matricula = nuevo_vehiculo
-        WHERE matricula = OLD.matricula
-          AND fecha >= CURRENT_DATE;
-    ELSE
-        -- Si no hay vehículos disponibles, enviar error
-        RAISE NOTICE 'No hay vehículos disponibles para reasignar al contrato o envío';
+        SET matricula = vehiculo_disponible.matricula
+        WHERE matricula = OLD.matricula;
     END IF;
 
-    RETURN NULL;
+    RETURN NULL; -- No necesitamos hacer nada con la fila eliminada
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger para detectar cuando un vehículo se elimina o pasa a "En taller"
 CREATE TRIGGER trigger_reasignar_vehiculo
-AFTER UPDATE OR DELETE ON VEHICULO
+BEFORE DELETE ON VEHICULO
 FOR EACH ROW
-WHEN (OLD.estado = 'Disponible' OR OLD.estado = 'En taller')  -- Se activa cuando el vehículo se elimina o pasa a "En taller"
+EXECUTE FUNCTION reasignar_vehiculo();
+CREATE TRIGGER trigger_reasignar_vehiculo_en_taller
+BEFORE UPDATE OF estado ON VEHICULO
+FOR EACH ROW
 EXECUTE FUNCTION reasignar_vehiculo();
 
 
