@@ -49,7 +49,7 @@ CREATE TABLE VEHICULO (
     matricula VARCHAR(20) PRIMARY KEY,
     modelo VARCHAR(50) NOT NULL,
     color VARCHAR(20),
-    estado VARCHAR(20) CHECK (estado IN ('Disponible', 'No disponible', 'En taller')),
+    estado VARCHAR(20) CHECK (estado IN ('Disponible', 'En Taller')),
     id_sede INT NOT NULL REFERENCES SEDE(id_sede),
     id_taller INT NOT NULL REFERENCES TALLER(id_taller)
 );
@@ -110,7 +110,7 @@ CREATE TABLE CONTRATO (
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
 );
 
--- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
+-- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:1:N)
 CREATE TABLE ENVIA (
     matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
     id_paquete INT NOT NULL,
@@ -131,13 +131,14 @@ CREATE TABLE CONDUCE (
     PRIMARY KEY (dni, matricula)
 );
 
--- Trigger para verificar disponibilidad del vehiculo al asignar conductor
+-- Trigger para verificar disponibilidad del vehiculo al asignar contrato
 CREATE OR REPLACE FUNCTION check_vehiculo_disponible()
 RETURNS TRIGGER AS $$
 BEGIN
     IF (SELECT estado FROM VEHICULO WHERE matricula = NEW.matricula LIMIT 1) != 'Disponible' THEN
         RAISE EXCEPTION 'El vehiculo no esta disponible';
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -146,6 +147,29 @@ CREATE TRIGGER trg_check_vehiculo_disponible
 BEFORE INSERT ON CONTRATO
 FOR EACH ROW
 EXECUTE FUNCTION check_vehiculo_disponible();
+
+-- Comprobar que se contrata un vehículo que está disponible
+CREATE OR REPLACE FUNCTION verificar_solapamiento_contrato()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar si hay un contrato existente para el mismo vehículo en el período solicitado
+    IF EXISTS (
+        SELECT 1
+        FROM CONTRATO
+        WHERE matricula = NEW.matricula
+          AND fecha_fin >= NEW.fecha_ini
+          AND fecha_ini <= NEW.fecha_fin
+    ) THEN
+        RAISE EXCEPTION 'El vehículo ya está en un contrato durante este período';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_verificar_solapamiento_contrato
+BEFORE INSERT ON CONTRATO
+FOR EACH ROW
+EXECUTE FUNCTION verificar_solapamiento_contrato();
 
 -- Trigger para asegurarnos de que la empresa está usando un coche que tienen contratado
 CREATE OR REPLACE FUNCTION valida_envia_vehiculo()
@@ -203,7 +227,7 @@ BEGIN
     SELECT id_taller
     INTO nuevo_taller
     FROM TALLER
-    WHERE estado = 'Activo'
+    WHERE id_taller != OLD.id_taller
     LIMIT 1;
 
     -- Si se encuentra un taller activo, reasignar los vehículos
@@ -478,8 +502,9 @@ VALUES (1, '0000AAA', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (2, '0000AAQ', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (3, '0000AAR', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (4, '0000AAS', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
-    (5, '0000AAT', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
-    (4, '0000AAD', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
+    (5, '0000AAT', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month');
+INSERT INTO CONTRATO(id_empresa, matricula, fecha_ini, fecha_fin)
+VALUES (4, '0000AAD', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
     (5, '0000AAE', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
     (1, '0000AAF', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
     (2, '0000AAG', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '1 day', CURRENT_DATE + INTERVAL '2 months'),
@@ -559,17 +584,7 @@ VALUES ('0000AAA', 1, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 da
     ('0000AAG', 27, 2, 'La Orotava', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '27 days'),
     ('0000AAH', 28, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '28 days'),
     ('0000AAD', 29, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '29 days'),
-    ('0000AAE', 30, 5, 'Güímar', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '30 days'),
-    ('0000AAF', 31, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '33 days'),
-    ('0000AAG', 32, 2, 'La Laguna', CURRENT_DATE + INTERVAL '32 days'),
-    ('0000AAH', 33, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '33 days'),
-    ('0000AAD', 34, 4, 'Arona', CURRENT_DATE + INTERVAL '34 days'),
-    ('0000AAE', 35, 5, 'Granadilla', CURRENT_DATE + INTERVAL '35 days'),
-    ('0000AAF', 36, 1, 'Adeje', CURRENT_DATE + INTERVAL '36 days'),
-    ('0000AAG', 37, 2, 'La Orotava', CURRENT_DATE + INTERVAL '37 days'),
-    ('0000AAH', 38, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '38 days'),
-    ('0000AAD', 39, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '39 days'),
-    ('0000AAE', 40, 5, 'Güímar', CURRENT_DATE + INTERVAL '40 days');
+    ('0000AAE', 30, 5, 'Güímar', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '30 days');
 
 -- Datos en CONDUCTOR
 INSERT INTO CONDUCTOR (dni, nombre, apellidos, licencia)
