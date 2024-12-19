@@ -160,6 +160,34 @@ BEFORE INSERT OR UPDATE ON ENVIA
 FOR EACH ROW
 EXECUTE FUNCTION valida_envia_vehiculo();
 
+-- Función para validar que el conductor ha pasado el test
+CREATE OR REPLACE FUNCTION valida_test_conductor()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Comprobar si el conductor tiene una nota aprobatoria en el test
+    IF NOT EXISTS (
+        SELECT 1
+        FROM TEST
+        WHERE TEST.dni = NEW.dni
+          AND TEST.nota >= 5
+    ) THEN
+        RAISE EXCEPTION 'El conductor con DNI % no ha aprobado el test para nuestra empresa.', NEW.dni;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear el trigger en la tabla CONDUCE
+CREATE TRIGGER verifica_test
+BEFORE INSERT OR UPDATE ON CONDUCE
+FOR EACH ROW
+EXECUTE FUNCTION valida_test_conductor();
+
+
+
+
+
 -- Insertar datos iniciales
 -- Datos en SEDE
 INSERT INTO SEDE (nombre, localidad, calle, numero, telefono, correo_contacto)
