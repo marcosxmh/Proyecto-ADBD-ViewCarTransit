@@ -107,7 +107,7 @@ CREATE TABLE CONTRATO (
     matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
     fecha_ini DATE NOT NULL CHECK (fecha_ini <= fecha_fin),
     fecha_fin DATE NOT NULL CHECK (fecha_fin > CURRENT_DATE),
-    FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
 );
 
 -- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
@@ -119,7 +119,7 @@ CREATE TABLE ENVIA (
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),
     FOREIGN KEY (id_empresa) REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE,
     FOREIGN KEY (id_paquete) REFERENCES PAQUETE(id_paquete) ON DELETE CASCADE,
-    PRIMARY KEY (matricula, id_paquete)
+    PRIMARY KEY (id_paquete)
 );
 
 -- Relacion CONDUCTOR conduce VEHICULO
@@ -458,7 +458,7 @@ VALUES ('0000ABF', 'Nissan NV400', 'Verde', 'Disponible', 2, 11, TRUE),
     ('0000ACN', 'Iveco Eurocargo', 'Azul', 'Disponible', 3, 15, TRUE);
 
 -- Datos en CONTRATO
-INSERT INTO CONTRATO (id_empresa, matricula, fecha_ini, fecha_fin)
+INSERT INTO CONTRATO(id_empresa, matricula, fecha_ini, fecha_fin)
 VALUES (1, '0000AAA', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (2, '0000AAB', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
     (3, '0000AAC', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 month'),
@@ -506,6 +506,26 @@ VALUES ('Televisor LED 55 pulgadas', 15.00, 1),
     ('Impresora multifunción', 8.00, 2),
     ('Microondas', 12.00, 3),
     ('Lavadora', 60.00, 4),
+    ('Secadora', 55.00, 5),
+    ('Televisor LED 55 pulgadas', 15.00, 1),
+    ('Ropa de invierno para niños', 10.50, 2),
+    ('Set de muebles de jardin', 80.00, 3),
+    ('Juguetes educativos', 12.30, 4),
+    ('Decoracion para el hogar', 25.00, 5),
+    ('Laptop Ultrabook', 2.50, 1),
+    ('Refrigerador 300L', 50.00, 2),
+    ('Juego de sabanas premium', 5.00, 3),
+    ('Set de herramientas electricas', 18.00, 4),
+    ('Cafetera de ultima generacion', 4.50, 5),
+    ('Aspiradora robot', 3.00, 1),
+    ('Bicicleta de montaña', 12.00, 2),
+    ('Consola de videojuegos', 4.00, 3),
+    ('Cámara fotográfica', 1.50, 4),
+    ('Smartphone de última generación', 0.20, 5),
+    ('Tablet 10 pulgadas', 0.50, 1),
+    ('Impresora multifunción', 8.00, 2),
+    ('Microondas', 12.00, 3),
+    ('Lavadora', 60.00, 4),
     ('Secadora', 55.00, 5);
 
 -- Datos en ENVIA
@@ -530,26 +550,26 @@ VALUES ('0000AAA', 1, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 da
     ('0000AAR', 18, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '18 days'),
     ('0000AAS', 19, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '19 days'),
     ('0000AAT', 20, 5, 'Güímar', CURRENT_DATE + INTERVAL '20 days'),
-    ('0000AAU', 1, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '21 days'),
-    ('0000AAV', 2, 2, 'La Laguna', CURRENT_DATE + INTERVAL '22 days'),
-    ('0000AAW', 3, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '23 days'),
-    ('0000AAX', 4, 4, 'Arona', CURRENT_DATE + INTERVAL '24 days'),
-    ('0000AAY', 5, 5, 'Granadilla', CURRENT_DATE + INTERVAL '25 days'),
-    ('0000AAZ', 6, 1, 'Adeje', CURRENT_DATE + INTERVAL '26 days'),
-    ('0000ABA', 7, 2, 'La Orotava', CURRENT_DATE + INTERVAL '27 days'),
-    ('0000ABB', 8, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '28 days'),
-    ('0000ABC', 9, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '29 days'),
-    ('0000ABD', 10, 5, 'Güímar', CURRENT_DATE + INTERVAL '30 days'),
-    ('0000ABE', 11, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '31 days'),
-    ('0000ABF', 12, 2, 'La Laguna', CURRENT_DATE + INTERVAL '32 days'),
-    ('0000ABG', 13, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '33 days'),
-    ('0000ABH', 14, 4, 'Arona', CURRENT_DATE + INTERVAL '34 days'),
-    ('0000ABI', 15, 5, 'Granadilla', CURRENT_DATE + INTERVAL '35 days'),
-    ('0000ABJ', 16, 1, 'Adeje', CURRENT_DATE + INTERVAL '36 days'),
-    ('0000ABK', 17, 2, 'La Orotava', CURRENT_DATE + INTERVAL '37 days'),
-    ('0000ABL', 18, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '38 days'),
-    ('0000ABM', 19, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '39 days'),
-    ('0000ABN', 20, 5, 'Güímar', CURRENT_DATE + INTERVAL '40 days');
+    ('0000AAF', 21, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '21 days'),
+    ('0000AAG', 22, 2, 'La Laguna', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '22 days'),
+    ('0000AAH', 23, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '23 days'),
+    ('0000AAD', 24, 4, 'Arona', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '24 days'),
+    ('0000AAE', 25, 5, 'Granadilla', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '25 days'),
+    ('0000AAF', 26, 1, 'Adeje', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '26 days'),
+    ('0000AAG', 27, 2, 'La Orotava', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '27 days'),
+    ('0000AAH', 28, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '28 days'),
+    ('0000AAD', 29, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '29 days'),
+    ('0000AAE', 30, 5, 'Güímar', CURRENT_DATE + INTERVAL '1 month' + INTERVAL '30 days'),
+    ('0000AAF', 31, 1, 'Santa Cruz de Tenerife', CURRENT_DATE + INTERVAL '33 days'),
+    ('0000AAG', 32, 2, 'La Laguna', CURRENT_DATE + INTERVAL '32 days'),
+    ('0000AAH', 33, 3, 'Puerto de la Cruz', CURRENT_DATE + INTERVAL '33 days'),
+    ('0000AAD', 34, 4, 'Arona', CURRENT_DATE + INTERVAL '34 days'),
+    ('0000AAE', 35, 5, 'Granadilla', CURRENT_DATE + INTERVAL '35 days'),
+    ('0000AAF', 36, 1, 'Adeje', CURRENT_DATE + INTERVAL '36 days'),
+    ('0000AAG', 37, 2, 'La Orotava', CURRENT_DATE + INTERVAL '37 days'),
+    ('0000AAH', 38, 3, 'Icod de los Vinos', CURRENT_DATE + INTERVAL '38 days'),
+    ('0000AAD', 39, 4, 'Los Realejos', CURRENT_DATE + INTERVAL '39 days'),
+    ('0000AAE', 40, 5, 'Güímar', CURRENT_DATE + INTERVAL '40 days');
 
 -- Datos en CONDUCTOR
 INSERT INTO CONDUCTOR (dni, nombre, apellidos, licencia)
@@ -559,6 +579,15 @@ VALUES ('12345678A', 'Juan', 'Perez', 'B'),
        ('45678901D', 'Laura', 'Martinez', 'B'),
        ('56789012E', 'Carlos', 'Sanchez', 'C'),
        ('67890123F', 'Ana', 'Gonzalez', 'C+E');
+
+-- Datos en TEST
+INSERT INTO TEST (nota, dni)
+VALUES (8.50, '12345678A'),
+    (7.00, '23456789B'),
+    (9.00, '34567890C'),
+    (6.50, '45678901D'),
+    (8.00, '56789012E'),
+    (5.50, '67890123F');
 
 -- Datos en CONDUCE
 INSERT INTO CONDUCE (dni, matricula)
@@ -577,15 +606,6 @@ VALUES ('12345678A', '0000AAA'),
     ('12345678A', '0000AAM'),
     ('23456789B', '0000AAN'),
     ('34567890C', '0000AAO');
-
--- Datos en TEST
-INSERT INTO TEST (nota, dni)
-VALUES (8.50, '12345678A'),
-    (7.00, '23456789B'),
-    (9.00, '34567890C'),
-    (6.50, '45678901D'),
-    (8.00, '56789012E'),
-    (4.50, '67890123F');
 
 -- Datos en INFORME
 INSERT INTO INFORME (fecha, nombre, apellidos, id_taller)
