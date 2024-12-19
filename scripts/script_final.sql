@@ -52,19 +52,21 @@ CREATE TABLE VEHICULO (
 );
 
 -- Tabla INFORME
+-- DELETE ON SET NULL, ya que aunque se elimine el taller, queremos mantener el informe
 CREATE TABLE INFORME (
     id_informe SERIAL PRIMARY KEY,
     fecha DATE CHECK (fecha <= CURRENT_DATE),
     nombre VARCHAR(50),
     apellidos VARCHAR(50),
-    id_taller INT REFERENCES TALLER(id_taller)
+    id_taller INT REFERENCES TALLER(id_taller) ON DELETE SET NULL
 );
 
 -- Tabla PAQUETE
 CREATE TABLE PAQUETE (
     id_paquete SERIAL PRIMARY KEY,
     descripcion VARCHAR(255),
-    peso DECIMAL(10,2) CHECK (peso > 0)
+    peso DECIMAL(10,2) CHECK (peso > 0),
+    id_empresa INT REFERENCES EMPRESA(id_empresa) ON DELETE CASCADE
 );
 
 -- Tabla CONDUCTOR
@@ -76,10 +78,11 @@ CREATE TABLE CONDUCTOR (
 );
 
 -- Tabla TEST
+-- Si se elimina el conductor que se elimine su test
 CREATE TABLE TEST (
     id_test SERIAL PRIMARY KEY,
     nota DECIMAL(5,2) CHECK (nota BETWEEN 0 AND 10),
-    dni VARCHAR(9) REFERENCES CONDUCTOR(dni)
+    dni VARCHAR(9) REFERENCES CONDUCTOR(dni) DELETE ON CASCADE
 );
 
 -- Tabla FURGONETA
@@ -94,7 +97,7 @@ CREATE TABLE CAMION (
 
 -- Relacion EMPRESA contrata VEHICULO (1:N)
 CREATE TABLE CONTRATA (
-    id_empresa INT REFERENCES EMPRESA(id_empresa),
+    id_empresa INT REFERENCES EMPRESA(id_empresa) DELETE ON CASCADE,
     matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
     fecha_ini DATE CHECK (fecha_ini <= fecha_fin),
     fecha_fin DATE CHECK (fecha_fin > CURRENT_DATE),
@@ -104,8 +107,8 @@ CREATE TABLE CONTRATA (
 -- Relacion EMPRESA envia PAQUETE en VEHÍCULO (1:M:N)
 CREATE TABLE ENVIA (
     matricula VARCHAR(20) REFERENCES VEHICULO(matricula),
-    id_paquete INT REFERENCES PAQUETE(id_paquete),
-    id_empresa INT REFERENCES EMPRESA(id_empresa),
+    id_paquete INT REFERENCES PAQUETE(id_paquete) DELETE ON CASCADE,
+    id_empresa INT REFERENCES EMPRESA(id_empresa) DELETE ON CASCADE,
     destino VARCHAR(100),
     fecha DATE CHECK (fecha >= CURRENT_DATE),
     PRIMARY KEY (matricula, id_paquete)
@@ -157,11 +160,11 @@ BEFORE INSERT OR UPDATE ON ENVIA
 FOR EACH ROW
 EXECUTE FUNCTION valida_envia_vehiculo();
 
--- Función para validar que el conductor ha pasado el test
+-- trigger para validar que el conductor ha pasado el test
 CREATE OR REPLACE FUNCTION valida_test_conductor()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Comprobar si el conductor tiene una nota aprobatoria en el test
+    -- Comprobar si el conductor tiene una nota >=5 en el test
     IF NOT EXISTS (
         SELECT 1
         FROM TEST
@@ -175,11 +178,84 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Crear el trigger en la tabla CONDUCE
 CREATE TRIGGER verifica_test
 BEFORE INSERT OR UPDATE ON CONDUCE
 FOR EACH ROW
 EXECUTE FUNCTION valida_test_conductor();
+
+-- Trigger para reasignar un taller a los vehículos cuando un taller se elimina
+CREATE OR REPLACE FUNCTION reasignar_taller_a_vehiculos()
+RETURNS TRIGGER AS $$
+DECLARE
+    nuevo_taller INT;
+BEGIN
+    -- Obtener el ID de un taller activo
+    SELECT id_taller
+    INTO nuevo_taller
+    FROM TALLER
+    WHERE estado = 'Activo'
+    LIMIT 1;
+
+    -- Si se encuentra un taller activo, reasignar los vehículos
+    IF nuevo_taller IS NOT NULL THEN
+        UPDATE VEHICULO
+        SET id_taller = nuevo_taller
+        WHERE id_taller = OLD.id_taller;
+    ELSE
+        -- Si no hay talleres activos, poner a null
+        UPDATE VEHICULO
+        SET id_taller = NULL
+        WHERE id_taller = OLD.id_taller;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_reasignar_taller
+BEFORE DELETE ON TALLER
+FOR EACH ROW
+EXECUTE FUNCTION reasignar_taller_a_vehiculos();
+
+-- Trigger para reasignar un vehículo cuando se elimina o pasa al taller, en la table ENVIA y CONTRATA
+CREATE OR REPLACE FUNCTION reasignar_vehiculo()
+RETURNS TRIGGER AS $$
+DECLARE
+    nuevo_vehiculo VARCHAR(20);
+BEGIN
+    -- Buscar un vehículo disponible en la flota
+    SELECT matricula
+    INTO nuevo_vehiculo
+    FROM VEHICULO
+    WHERE estado = 'Disponible'
+    LIMIT 1;  -- Tomamos solo uno disponible
+
+    IF nuevo_vehiculo IS NOT NULL THEN
+        -- Actualizamos el contrato y los envios pendientes
+        UPDATE CONTRATA
+        SET matricula = nuevo_vehiculo
+        WHERE matricula = OLD.matricula;
+
+        UPDATE ENVIA
+        SET matricula = nuevo_vehiculo
+        WHERE matricula = OLD.matricula
+          AND fecha >= CURRENT_DATE;
+    ELSE
+        -- Si no hay vehículos disponibles, enviar error
+        RAISE NOTICE 'No hay vehículos disponibles para reasignar al contrato o envío';
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para detectar cuando un vehículo se elimina o pasa a "En taller"
+CREATE TRIGGER trigger_reasignar_vehiculo
+AFTER UPDATE OR DELETE ON VEHICULO
+FOR EACH ROW
+WHEN (OLD.estado = 'Disponible' OR OLD.estado = 'En taller')  -- Se activa cuando el vehículo se elimina o pasa a "En taller"
+EXECUTE FUNCTION reasignar_vehiculo();
+
 
 
 
