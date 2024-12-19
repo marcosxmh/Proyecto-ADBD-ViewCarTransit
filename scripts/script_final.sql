@@ -62,6 +62,7 @@ CREATE TABLE INFORME (
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
+    matricula VARCHAR(20) NOT NULL REFERENCES VEHICULO(matricula),
     id_taller INT REFERENCES TALLER(id_taller) ON DELETE SET NULL
 );
 
@@ -628,13 +629,13 @@ VALUES ('12345678A', '0000AAA'),
     ('34567890C', '0000AAO');
 
 -- Datos en INFORME
-INSERT INTO INFORME (fecha, nombre, apellidos, id_taller)
-VALUES (CURRENT_DATE, 'Juan', 'Perez', 1),
-    (CURRENT_DATE, 'Maria', 'Lopez', 2),
-    (CURRENT_DATE, 'Pedro', 'Garcia', 3),
-    (CURRENT_DATE, 'Laura', 'Martinez', 4),
-    (CURRENT_DATE, 'Carlos', 'Sanchez', 5),
-    (CURRENT_DATE, 'Ana', 'Gonzalez', 6);
+INSERT INTO INFORME (fecha, nombre, apellidos, id_taller, descripcion, matricula)
+VALUES (CURRENT_DATE, 'Juan', 'Perez', 1, 'El vehiculo presenta un fallo en el motor', '0000AAA'),
+    (CURRENT_DATE, 'Maria', 'Lopez', 2, 'El vehiculo presenta un fallo en el sistema de frenos', '0000AAB'),
+    (CURRENT_DATE, 'Pedro', 'Garcia', 3, 'El vehiculo presenta un fallo en el sistema de direccion', '0000AAC'),
+    (CURRENT_DATE, 'Laura', 'Martinez', 4, 'El vehiculo presenta un fallo en el sistema de luces', '0000AAD'),
+    (CURRENT_DATE, 'Carlos', 'Sanchez', 5, 'El vehiculo presenta un fallo en el sistema de climatizacion', '0000AAE'),
+    (CURRENT_DATE, 'Ana', 'Gonzalez', 6, 'El vehiculo presenta un fallo en el sistema de suspension', '0000AAF');
 
 -- Final: Confirmar esquema
 COMMENT ON SCHEMA public IS 'Esquema para la gestion de flotas de vehiculos de empresas clientes';
