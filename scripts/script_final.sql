@@ -137,6 +137,29 @@ BEFORE INSERT ON CONTRATA
 FOR EACH ROW
 EXECUTE FUNCTION check_vehiculo_disponible();
 
+-- Trigger para asegurarnos de que la empresa está usando un coche que tienen contratado
+CREATE OR REPLACE FUNCTION valida_envia_vehiculo()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM CONTRATA
+        WHERE CONTRATA.id_empresa = NEW.id_empresa
+          AND CONTRATA.matricula = NEW.matricula
+          AND NEW.fecha BETWEEN CONTRATA.fecha_ini AND CONTRATA.fecha_fin
+    ) THEN
+        RAISE EXCEPTION 'La empresa no tiene contratado este vehículo para le fecha de reparto.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER verifica_contrata
+BEFORE INSERT OR UPDATE ON ENVIA
+FOR EACH ROW
+EXECUTE FUNCTION valida_envia_vehiculo();
+
 -- Insertar datos iniciales
 -- Datos en SEDE
 INSERT INTO SEDE (nombre, localidad, calle, numero, telefono, correo_contacto)
