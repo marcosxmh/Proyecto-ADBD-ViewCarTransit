@@ -51,8 +51,7 @@ CREATE TABLE VEHICULO (
     color VARCHAR(20),
     estado VARCHAR(20) CHECK (estado IN ('Disponible', 'No disponible', 'En taller')),
     id_sede INT NOT NULL REFERENCES SEDE(id_sede),
-    id_taller INT NOT NULL REFERENCES TALLER(id_taller),
-    CONSTRAINT vehiculo_no_insert CHECK (FALSE) -- No se pueden insertar datos directamente en esta tabla
+    id_taller INT NOT NULL REFERENCES TALLER(id_taller)
 );
 
 -- Tabla INFORME
@@ -267,6 +266,22 @@ FOR EACH ROW
 WHEN (OLD.estado = 'Disponible' OR OLD.estado = 'En taller')  -- Se activa cuando el vehículo se elimina o pasa a "En taller"
 EXECUTE FUNCTION reasignar_vehiculo();
 
+-- Trigger para evitar inserciones directas en VEHICULO
+CREATE OR REPLACE FUNCTION prevent_insert_into_vehiculo()
+RETURNS TRIGGER AS $$
+BEGIN
+    RAISE EXCEPTION 'No se pueden insertar datos directamente en VEHICULO';
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear el trigger
+CREATE TRIGGER prevent_insert_trigger
+    BEFORE INSERT ON VEHICULO
+    FOR EACH ROW
+    EXECUTE FUNCTION prevent_insert_into_vehiculo();
+
+
 
 
 
@@ -315,6 +330,7 @@ VALUES ('Taller Central', '922-123-456', 'Los Majuelos', 'Central', '100'),
        ('Taller Isabel', '922-333-444', 'Localidad 13', 'Calle 13', '113'),
        ('Taller Francisco', '922-444-555', 'Localidad 14', 'Calle 14', '114'),
        ('Taller Sofia', '922-555-666', 'Localidad 15', 'Calle 15', '115');
+
 -- Datos en FURGONETA
 INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
 VALUES ('0000AAA', 'Renault Kangoo', 'Blanco', 'Disponible', 1, 1, TRUE),
