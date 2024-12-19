@@ -336,11 +336,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 CREATE TRIGGER trigger_verificar_sede_unica_empresa
 BEFORE UPDATE ON EMPRESA
 FOR EACH ROW
 EXECUTE FUNCTION verificar_sede_unica_empresa();
+
+-- Trigger añadir a vehiculo cuando se añada furgoneta
+CREATE OR REPLACE FUNCTION insertar_furgoneta_en_vehiculo()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insertamos un nuevo registro en VEHICULO tomando los datos de FURGONETA
+    INSERT INTO VEHICULO (matricula, modelo, color, estado, id_sede, id_taller)
+    VALUES (NEW.matricula, NEW.modelo, NEW.color, NEW.estado, NEW.id_sede, NEW.id_taller);
+
+    -- Devolvemos el nuevo registro insertado en FURGONETA
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_insertar_furgoneta_en_vehiculo
+BEFORE INSERT ON FURGONETA
+FOR EACH ROW
+EXECUTE FUNCTION insertar_furgoneta_en_vehiculo();
+
 
 
 -- Insertar datos iniciales
