@@ -9,7 +9,7 @@ CREATE TABLE SEDE (
     calle VARCHAR(50),
     numero VARCHAR(10),
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
-    correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%')
+    correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%.%')
 );
 
 -- Tabla ENCARGADO
@@ -29,7 +29,7 @@ CREATE TABLE EMPRESA (
     nombre VARCHAR(50) NOT NULL,
     tipo_empresa VARCHAR(50) NOT NULL,
     telefono VARCHAR(20) CHECK (telefono ~ '^\d{3}-\d{3}-\d{3}$'),
-    correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%'),
+    correo_contacto VARCHAR(50) CHECK (correo_contacto LIKE '%@%.%'),
     id_sede INT NOT NULL,
     FOREIGN KEY (id_sede) REFERENCES SEDE(id_sede) ON DELETE CASCADE
 );
@@ -296,11 +296,30 @@ BEFORE UPDATE OF estado ON VEHICULO
 FOR EACH ROW
 EXECUTE FUNCTION reasignar_vehiculo();
 
+-- Trigger Vehículo solo puede pertenecer a una sede
+CREATE OR REPLACE FUNCTION verificar_sede_vehiculo()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificamos si el vehículo ya está asociado a otra sede
+    IF EXISTS (
+        SELECT 1 
+        FROM VEHICULO v 
+        WHERE v.matricula = NEW.matricula 
+        AND v.id_sede != NEW.id_sede
+    ) THEN
+        -- Si el vehículo está en otra sede, lanzamos un error
+        RAISE EXCEPTION 'El vehículo con matrícula % ya está asociado a otra sede.', NEW.matricula;
+    END IF;
 
+    -- Si no, permitimos la operación
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-
-
-
+CREATE TRIGGER trigger_verificar_sede_vehiculo
+BEFORE INSERT OR UPDATE ON VEHICULO
+FOR EACH ROW
+EXECUTE FUNCTION verificar_sede_vehiculo();
 
 
 -- Insertar datos iniciales
