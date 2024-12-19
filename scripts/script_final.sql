@@ -321,6 +321,27 @@ BEFORE INSERT OR UPDATE ON VEHICULO
 FOR EACH ROW
 EXECUTE FUNCTION verificar_sede_vehiculo();
 
+-- Trigger para que una empresa no sea gestionada por varias sedes
+CREATE OR REPLACE FUNCTION verificar_sede_unica_empresa()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificamos si la empresa ya está asociada a una sede
+    IF OLD.id_sede IS DISTINCT FROM NEW.id_sede THEN
+        -- Si la empresa ya tiene una sede asignada y se intenta cambiar, lanzamos un error
+        RAISE EXCEPTION 'La empresa con id % ya está gestionada por otra sede y no puede ser reasignada.', NEW.id_empresa;
+    END IF;
+
+    -- Si no se intenta cambiar la sede, permitimos la operación
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trigger_verificar_sede_unica_empresa
+BEFORE UPDATE ON EMPRESA
+FOR EACH ROW
+EXECUTE FUNCTION verificar_sede_unica_empresa();
+
 
 -- Insertar datos iniciales
 -- Datos en SEDE
