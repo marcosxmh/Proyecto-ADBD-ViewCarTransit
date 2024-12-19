@@ -61,6 +61,7 @@ CREATE TABLE INFORME (
     fecha DATE NOT NULL CHECK (fecha <= CURRENT_DATE),
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
     id_taller INT REFERENCES TALLER(id_taller) ON DELETE SET NULL
 );
 
