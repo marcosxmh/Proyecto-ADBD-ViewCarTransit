@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de envios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Paquetes de la empresa {{id_empresa}}</h1>
+        <form method="POST">
+            <input type="text" name="matricula" placeholder="Matrícula">
+            <input type="number" step="1" name="id_paquete" placeholder="id_paquete" required>
+            <input type="text" name="destino" placeholder="Destino">
+            <input type="date" name="fecha" placeholder="Fecha">
+            <button type="submit">Agregar Paquete</button>
+        </form>
+        <table>
+            <tr>
+                <th>Matrícula vehículo</th>
+                <th>ID Paquete</th>
+                <th>Destino</th>
+                <th>Fecha</th>
+            </tr>
+            {% for paquete in paquetes %}
+            <tr>
+                <td>{{ paquete[0] }}</td>
+                <td>{{ paquete[1] }}</td>
+                <td>{{ paquete[2] }}</td>
+                <td>{{ paquete[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

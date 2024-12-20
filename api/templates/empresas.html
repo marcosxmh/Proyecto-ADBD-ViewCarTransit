@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Lista de Empresas</h1>
+    <form method="POST">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="tipo_empresa" placeholder="Tipo empresa" required>
+        <input type="text" name="telefono" placeholder="Teléfono" required>
+        <input type="text" name="correo_contacto" placeholder="Correo" required>
+        <input type="text" name="id_sede" placeholder="ID Sede" required>
+        
+        <button type="submit">Agregar Empresa</button>
+    </form>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Tipo Empresa</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Nombre Sede</th>
+            <th>ID Sede</th>
+            
+        </tr>
+        {% for empresa in empresas %}
+        <tr>
+            <td>{{ empresa[0] }}</td>
+            <td>{{ empresa[1] }}</td>
+            <td>{{ empresa[2] }}</td>
+            <td>{{ empresa[3] }}</td>
+            <td>{{ empresa[4] }}</td>
+            <td>{{ empresa[5] }}</td>
+            <td>{{ empresa[6] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de empresas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Lista de Empresas</h1>
+    <table>
+        <tr>
+            <th>ID Empresa</th>
+            <th>Nombre</th>
+            <th>Acción</th>
+        </tr>
+        {% for empresa in empresas %}
+        <tr>
+            <td>{{ empresa[0] }}</td>
+            <td>{{ empresa[1] }}</td>
+            <td>
+                <!-- Enlace para redirigir al manage_envia de esa empresa -->
+                <a href="{{ url_for('manage_envia', id_empresa=empresa[0]) }}">Ver Paquetes</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
