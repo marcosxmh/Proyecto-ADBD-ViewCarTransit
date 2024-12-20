@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehículos</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de Vehículos</h1>
+    <form method="POST">
+        <input type="text" name="matricula" placeholder="Matrícula" required>
+        <input type="text" name="modelo" placeholder="Modelo" required>
+        <input type="text" name="color" placeholder="Color">
+        <input type="text" name="estado" placeholder="Estado">
+        <input type="number" name="id_sede" placeholder="ID Sede" required>
+        <input type="number" name="id_taller" placeholder="ID Taller">
+        <button type="submit">Agregar Vehículo</button>
+    </form>
+    <table>
+        <tr>
+            <th>Matrícula</th>
+            <th>Modelo</th>
+            <th>Color</th>
+            <th>Estado</th>
+            <th>ID Sede</th>
+            <th>ID Taller</th>
+        </tr>
+        {% for vehiculo in vehiculos %}
+        <tr>
+            <td>{{ vehiculo[0] }}</td>
+            <td>{{ vehiculo[1] }}</td>
+            <td>{{ vehiculo[2] }}</td>
+            <td>{{ vehiculo[3] }}</td>
+            <td>{{ vehiculo[4] }}</td>
+            <td>{{ vehiculo[5] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
