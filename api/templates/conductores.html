@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Lista de Conductores</h1>
+    <form method="POST">
+        <input type="text" name="dni" placeholder="DNI" required>
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="apellidos" placeholder="Apellidos" required>
+        <input type="text" name="licencia" placeholder="Licencia" required>
+        <button type="submit">Agregar Conductor</button>
+    </form>
+    <table>
+        <tr>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Licencia</th>  
+        </tr>
+        {% for conductor in conductores %}
+        <tr>
+            <td>{{ conductor[0] }}</td>
+            <td>{{ conductor[1] }}</td>
+            <td>{{ conductor[2] }}</td>
+            <td>{{ conductor[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

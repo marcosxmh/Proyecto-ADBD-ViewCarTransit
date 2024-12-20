@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ViewCarTransit - Inicio</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio</title>
+  <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <h1>Bienvenido a ViewCarTransit</h1>
-    <ul>
-        <li><a href="/view-data">Ver datos</a></li>
-        <li><a href="/add-data">Añadir datos</a></li>
-        <li><a href="/modify-data">Modificar datos</a></li>
-        <li><a href="/delete-data">Eliminar datos</a></li>
-        <li><a href="/select-company">Seleccionar empresa</a></li>
-    </ul>
+  
+  <div class="container" style="text-align: center;">
+    <h1>Bienvenido aW ViewCarTransit</h1>
+    <div>
+      <img src="../static/logo.png" alt="Logo de ViewCarTransit" style="width: 400px; height: 200px;">
+    </div>
+    <button onclick="location.href='{{ url_for('empresas') }}'">Gestionar Empresas</button>
+    <button onclick="location.href='{{ url_for('vehiculos') }}'">Gestionar Vehículos</button>
+    <button onclick="location.href='{{ url_for('conductores') }}'">Gestionar Conductores</button>
+    <button onclick="location.href='{{ url_for('paquetes') }}'">Gestionar Paquetes</button>
+    <button onclick="location.href='{{ url_for('mostrar_empresas') }}'">Modificar envios</button>
+    <button onclick="location.href='{{ url_for('delete_vehiculo') }}'">Eliminar vehículos</button>
+  </div>
+
 </body>
 </html>

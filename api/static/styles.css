@@ -1,72 +1,171 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
+/* Reset de estilo básico */
+body, h1, h2, h3, p, ul, ol, li, table, th, td, input, button {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilo general del cuerpo */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  padding: 20px;
+  line-height: 1.6;
 }
 
 h1 {
-  color: #333;
-  text-align: center;
-  margin-top: 20px;
-}
-
-form {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-  display: block;
-  margin: 10px 0 5px;
-  font-weight: bold;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
+  font-size: 2.5em;
   margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 14px;
+  text-align: center;
+  color: #2c3e50;
 }
 
+a {
+  text-decoration: none;
+  color: #3498db;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #2c3e50;
+}
+
+/* Botones */
 button {
-  background-color: #007BFF;
-  color: #fff;
+  background-color: #3498db;
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-  text-align: center;
+/* Formularios */
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
 }
 
-ul li {
-  display: inline;
-  margin: 0 10px;
+form input, form button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
 }
 
-ul li a {
-  text-decoration: none;
-  color: #007BFF;
+form input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+  padding: 15px;
+  text-align: left;
+}
+
+table th {
+  background-color: #3498db;
+  color: white;
   font-weight: bold;
 }
 
-ul li a:hover {
-  text-decoration: underline;
+table tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.2s ease;
+}
+
+/* Contenedores */
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-container {
+  text-align: center;
+  max-width: 600px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-code {
+  font-size: 96px;
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 0;
+}
+
+.error-message {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.error-description {
+  font-size: 16px;
+  color: #555;
+}
+/* Establece el contenedor de las tablas como un contenedor flexible */
+.table-container {
+  display: flex;                /* Usa flexbox para colocar los elementos en línea */
+  justify-content: space-between; /* Espacio entre las tablas */
+  align-items: flex-start;      /* Alineación superior */
+  gap: 20px;                    /* Espacio entre las tablas */
+}
+
+/* Estilo común para las tablas */
+.double-table {
+  width: 45%;                   /* Define el ancho de las tablas */
+  border-collapse: collapse;    /* Colapsa los bordes de las celdas */
+  margin: 0;                    /* Elimina margen extra */
+}
+
+caption {
+  font-size: 18px;              /* Tamaño de la fuente */
+  font-weight: bold;            /* Negrita para el título */
+  text-align: center;           /* Centrado del título */
+  margin-bottom: 10px;          /* Espacio debajo del título */
+}
+
+/* Estilo para las celdas y las cabeceras */
+th, td {
+  border: 1px solid #ddd;       /* Borde gris claro para celdas */
+  padding: 8px;                 /* Espaciado dentro de las celdas */
+  text-align: left;             /* Alineación de texto */
+}
+
+th {
+  background-color: #f2f2f2;    /* Color de fondo para las cabeceras */
 }
