@@ -5,6 +5,32 @@
 -- Dumped from database version 14.15 (Ubuntu 14.15-0ubuntu0.22.04.1)
 -- Dumped by pg_dump version 14.15 (Ubuntu 14.15-0ubuntu0.22.04.1)
 
+-- Autores:
+-- Ramiro Difonti Domé (alu0101425030)
+-- Ruyman García Martín (alu0101408866)
+-- Marcos Medinilla Hernandéz (alu0101211206)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+DROP DATABASE viewcartransit;
+--
+-- Name: viewcartransit; Type: DATABASE; Schema: -; Owner: -
+--
+
+CREATE DATABASE viewcartransit WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'es_ES.UTF-8';
+
+
+\connect viewcartransit
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -17,7 +43,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: check_vehiculo_disponible(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: check_vehiculo_disponible(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.check_vehiculo_disponible() RETURNS trigger
@@ -33,10 +59,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.check_vehiculo_disponible() OWNER TO ramirodifonti;
-
 --
--- Name: eliminar_de_vehiculo(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: eliminar_de_vehiculo(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.eliminar_de_vehiculo() RETURNS trigger
@@ -50,10 +74,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.eliminar_de_vehiculo() OWNER TO ramirodifonti;
-
 --
--- Name: insertar_en_vehiculo(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: insertar_en_vehiculo(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.insertar_en_vehiculo() RETURNS trigger
@@ -68,10 +90,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.insertar_en_vehiculo() OWNER TO ramirodifonti;
-
 --
--- Name: reasignar_camion(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: reasignar_camion(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.reasignar_camion() RETURNS trigger
@@ -111,10 +131,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.reasignar_camion() OWNER TO ramirodifonti;
-
 --
--- Name: reasignar_furgoneta(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: reasignar_furgoneta(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.reasignar_furgoneta() RETURNS trigger
@@ -154,10 +172,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.reasignar_furgoneta() OWNER TO ramirodifonti;
-
 --
--- Name: reasignar_taller_a_vehiculos(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: reasignar_taller_a_vehiculos(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.reasignar_taller_a_vehiculos() RETURNS trigger
@@ -190,10 +206,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.reasignar_taller_a_vehiculos() OWNER TO ramirodifonti;
-
 --
--- Name: valida_envia_vehiculo(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: valida_envia_vehiculo(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.valida_envia_vehiculo() RETURNS trigger
@@ -215,10 +229,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.valida_envia_vehiculo() OWNER TO ramirodifonti;
-
 --
--- Name: valida_test_conductor(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: valida_test_conductor(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.valida_test_conductor() RETURNS trigger
@@ -240,10 +252,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.valida_test_conductor() OWNER TO ramirodifonti;
-
 --
--- Name: verificar_sede_unica_empresa(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: verificar_sede_unica_empresa(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.verificar_sede_unica_empresa() RETURNS trigger
@@ -262,10 +272,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.verificar_sede_unica_empresa() OWNER TO ramirodifonti;
-
 --
--- Name: verificar_sede_vehiculo(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: verificar_sede_vehiculo(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.verificar_sede_vehiculo() RETURNS trigger
@@ -289,10 +297,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.verificar_sede_vehiculo() OWNER TO ramirodifonti;
-
 --
--- Name: verificar_solapamiento_contrato(); Type: FUNCTION; Schema: public; Owner: ramirodifonti
+-- Name: verificar_solapamiento_contrato(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.verificar_solapamiento_contrato() RETURNS trigger
@@ -315,14 +321,12 @@ END;
 $$;
 
 
-ALTER FUNCTION public.verificar_solapamiento_contrato() OWNER TO ramirodifonti;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: vehiculo; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: vehiculo; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.vehiculo (
@@ -336,10 +340,8 @@ CREATE TABLE public.vehiculo (
 );
 
 
-ALTER TABLE public.vehiculo OWNER TO ramirodifonti;
-
 --
--- Name: camion; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: camion; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.camion (
@@ -348,10 +350,8 @@ CREATE TABLE public.camion (
 INHERITS (public.vehiculo);
 
 
-ALTER TABLE public.camion OWNER TO ramirodifonti;
-
 --
--- Name: conduce; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: conduce; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.conduce (
@@ -360,10 +360,8 @@ CREATE TABLE public.conduce (
 );
 
 
-ALTER TABLE public.conduce OWNER TO ramirodifonti;
-
 --
--- Name: conductor; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: conductor; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.conductor (
@@ -375,10 +373,8 @@ CREATE TABLE public.conductor (
 );
 
 
-ALTER TABLE public.conductor OWNER TO ramirodifonti;
-
 --
--- Name: contrato; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: contrato; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.contrato (
@@ -392,10 +388,8 @@ CREATE TABLE public.contrato (
 );
 
 
-ALTER TABLE public.contrato OWNER TO ramirodifonti;
-
 --
--- Name: contrato_id_contrato_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.contrato_id_contrato_seq
@@ -407,17 +401,15 @@ CREATE SEQUENCE public.contrato_id_contrato_seq
     CACHE 1;
 
 
-ALTER TABLE public.contrato_id_contrato_seq OWNER TO ramirodifonti;
-
 --
--- Name: contrato_id_contrato_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.contrato_id_contrato_seq OWNED BY public.contrato.id_contrato;
 
 
 --
--- Name: empresa; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: empresa; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.empresa (
@@ -432,10 +424,8 @@ CREATE TABLE public.empresa (
 );
 
 
-ALTER TABLE public.empresa OWNER TO ramirodifonti;
-
 --
--- Name: empresa_id_empresa_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: empresa_id_empresa_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.empresa_id_empresa_seq
@@ -447,17 +437,15 @@ CREATE SEQUENCE public.empresa_id_empresa_seq
     CACHE 1;
 
 
-ALTER TABLE public.empresa_id_empresa_seq OWNER TO ramirodifonti;
-
 --
--- Name: empresa_id_empresa_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: empresa_id_empresa_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.empresa_id_empresa_seq OWNED BY public.empresa.id_empresa;
 
 
 --
--- Name: encargado; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: encargado; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.encargado (
@@ -468,10 +456,8 @@ CREATE TABLE public.encargado (
 );
 
 
-ALTER TABLE public.encargado OWNER TO ramirodifonti;
-
 --
--- Name: envia; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: envia; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.envia (
@@ -484,10 +470,8 @@ CREATE TABLE public.envia (
 );
 
 
-ALTER TABLE public.envia OWNER TO ramirodifonti;
-
 --
--- Name: furgoneta; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: furgoneta; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.furgoneta (
@@ -496,10 +480,8 @@ CREATE TABLE public.furgoneta (
 INHERITS (public.vehiculo);
 
 
-ALTER TABLE public.furgoneta OWNER TO ramirodifonti;
-
 --
--- Name: informe; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: informe; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.informe (
@@ -514,10 +496,8 @@ CREATE TABLE public.informe (
 );
 
 
-ALTER TABLE public.informe OWNER TO ramirodifonti;
-
 --
--- Name: informe_id_informe_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: informe_id_informe_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.informe_id_informe_seq
@@ -529,17 +509,15 @@ CREATE SEQUENCE public.informe_id_informe_seq
     CACHE 1;
 
 
-ALTER TABLE public.informe_id_informe_seq OWNER TO ramirodifonti;
-
 --
--- Name: informe_id_informe_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: informe_id_informe_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.informe_id_informe_seq OWNED BY public.informe.id_informe;
 
 
 --
--- Name: paquete; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: paquete; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.paquete (
@@ -551,10 +529,8 @@ CREATE TABLE public.paquete (
 );
 
 
-ALTER TABLE public.paquete OWNER TO ramirodifonti;
-
 --
--- Name: paquete_id_paquete_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: paquete_id_paquete_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.paquete_id_paquete_seq
@@ -566,17 +542,15 @@ CREATE SEQUENCE public.paquete_id_paquete_seq
     CACHE 1;
 
 
-ALTER TABLE public.paquete_id_paquete_seq OWNER TO ramirodifonti;
-
 --
--- Name: paquete_id_paquete_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: paquete_id_paquete_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.paquete_id_paquete_seq OWNED BY public.paquete.id_paquete;
 
 
 --
--- Name: sede; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: sede; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.sede (
@@ -592,10 +566,8 @@ CREATE TABLE public.sede (
 );
 
 
-ALTER TABLE public.sede OWNER TO ramirodifonti;
-
 --
--- Name: sede_id_sede_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: sede_id_sede_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.sede_id_sede_seq
@@ -607,17 +579,15 @@ CREATE SEQUENCE public.sede_id_sede_seq
     CACHE 1;
 
 
-ALTER TABLE public.sede_id_sede_seq OWNER TO ramirodifonti;
-
 --
--- Name: sede_id_sede_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: sede_id_sede_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.sede_id_sede_seq OWNED BY public.sede.id_sede;
 
 
 --
--- Name: taller; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: taller; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.taller (
@@ -631,10 +601,8 @@ CREATE TABLE public.taller (
 );
 
 
-ALTER TABLE public.taller OWNER TO ramirodifonti;
-
 --
--- Name: taller_id_taller_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: taller_id_taller_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.taller_id_taller_seq
@@ -646,17 +614,15 @@ CREATE SEQUENCE public.taller_id_taller_seq
     CACHE 1;
 
 
-ALTER TABLE public.taller_id_taller_seq OWNER TO ramirodifonti;
-
 --
--- Name: taller_id_taller_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: taller_id_taller_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.taller_id_taller_seq OWNED BY public.taller.id_taller;
 
 
 --
--- Name: test; Type: TABLE; Schema: public; Owner: ramirodifonti
+-- Name: test; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.test (
@@ -667,10 +633,8 @@ CREATE TABLE public.test (
 );
 
 
-ALTER TABLE public.test OWNER TO ramirodifonti;
-
 --
--- Name: test_id_test_seq; Type: SEQUENCE; Schema: public; Owner: ramirodifonti
+-- Name: test_id_test_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.test_id_test_seq
@@ -682,66 +646,64 @@ CREATE SEQUENCE public.test_id_test_seq
     CACHE 1;
 
 
-ALTER TABLE public.test_id_test_seq OWNER TO ramirodifonti;
-
 --
--- Name: test_id_test_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ramirodifonti
+-- Name: test_id_test_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.test_id_test_seq OWNED BY public.test.id_test;
 
 
 --
--- Name: contrato id_contrato; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: contrato id_contrato; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contrato ALTER COLUMN id_contrato SET DEFAULT nextval('public.contrato_id_contrato_seq'::regclass);
 
 
 --
--- Name: empresa id_empresa; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: empresa id_empresa; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.empresa ALTER COLUMN id_empresa SET DEFAULT nextval('public.empresa_id_empresa_seq'::regclass);
 
 
 --
--- Name: informe id_informe; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: informe id_informe; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.informe ALTER COLUMN id_informe SET DEFAULT nextval('public.informe_id_informe_seq'::regclass);
 
 
 --
--- Name: paquete id_paquete; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: paquete id_paquete; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paquete ALTER COLUMN id_paquete SET DEFAULT nextval('public.paquete_id_paquete_seq'::regclass);
 
 
 --
--- Name: sede id_sede; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: sede id_sede; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sede ALTER COLUMN id_sede SET DEFAULT nextval('public.sede_id_sede_seq'::regclass);
 
 
 --
--- Name: taller id_taller; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: taller id_taller; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.taller ALTER COLUMN id_taller SET DEFAULT nextval('public.taller_id_taller_seq'::regclass);
 
 
 --
--- Name: test id_test; Type: DEFAULT; Schema: public; Owner: ramirodifonti
+-- Name: test id_test; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.test ALTER COLUMN id_test SET DEFAULT nextval('public.test_id_test_seq'::regclass);
 
 
 --
--- Data for Name: camion; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: camion; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.camion (matricula, modelo, color, estado, id_sede, id_taller, tiene_trailer) FROM stdin;
@@ -784,7 +746,7 @@ COPY public.camion (matricula, modelo, color, estado, id_sede, id_taller, tiene_
 
 
 --
--- Data for Name: conduce; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: conduce; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.conduce (dni, matricula) FROM stdin;
@@ -807,7 +769,7 @@ COPY public.conduce (dni, matricula) FROM stdin;
 
 
 --
--- Data for Name: conductor; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: conductor; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.conductor (dni, nombre, apellidos, licencia) FROM stdin;
@@ -821,7 +783,7 @@ COPY public.conductor (dni, nombre, apellidos, licencia) FROM stdin;
 
 
 --
--- Data for Name: contrato; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: contrato; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.contrato (id_contrato, id_empresa, matricula, fecha_ini, fecha_fin) FROM stdin;
@@ -853,12 +815,11 @@ COPY public.contrato (id_contrato, id_empresa, matricula, fecha_ini, fecha_fin) 
 26	3	0000ACK	2025-01-21	2025-02-20
 27	1	0000ACM	2025-01-21	2025-02-20
 28	2	0000ACN	2025-01-21	2025-02-20
-29	1	0000ABF	2025-03-20	2025-04-20
 \.
 
 
 --
--- Data for Name: empresa; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: empresa; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.empresa (id_empresa, nombre, tipo_empresa, telefono, correo_contacto, id_sede) FROM stdin;
@@ -871,7 +832,7 @@ COPY public.empresa (id_empresa, nombre, tipo_empresa, telefono, correo_contacto
 
 
 --
--- Data for Name: encargado; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: encargado; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.encargado (dni, nombre, apellidos, id_sede) FROM stdin;
@@ -882,7 +843,7 @@ COPY public.encargado (dni, nombre, apellidos, id_sede) FROM stdin;
 
 
 --
--- Data for Name: envia; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: envia; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.envia (matricula, id_paquete, id_empresa, destino, fecha) FROM stdin;
@@ -916,12 +877,11 @@ COPY public.envia (matricula, id_paquete, id_empresa, destino, fecha) FROM stdin
 0000ACK	28	3	Icod de los Vinos	2025-02-17
 0000AAD	29	4	Los Realejos	2025-02-18
 0000AAE	30	5	Güímar	2025-02-19
-0000ABF	31	1	Santa Cruz de Tenerife	2025-03-30
 \.
 
 
 --
--- Data for Name: furgoneta; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: furgoneta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.furgoneta (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral) FROM stdin;
@@ -960,7 +920,7 @@ COPY public.furgoneta (matricula, modelo, color, estado, id_sede, id_taller, por
 
 
 --
--- Data for Name: informe; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: informe; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.informe (id_informe, fecha, nombre, apellidos, descripcion, matricula, id_taller) FROM stdin;
@@ -974,7 +934,7 @@ COPY public.informe (id_informe, fecha, nombre, apellidos, descripcion, matricul
 
 
 --
--- Data for Name: paquete; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: paquete; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.paquete (id_paquete, descripcion, peso, id_empresa) FROM stdin;
@@ -1022,7 +982,7 @@ COPY public.paquete (id_paquete, descripcion, peso, id_empresa) FROM stdin;
 
 
 --
--- Data for Name: sede; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: sede; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.sede (id_sede, nombre, localidad, calle, numero, telefono, correo_contacto) FROM stdin;
@@ -1033,7 +993,7 @@ COPY public.sede (id_sede, nombre, localidad, calle, numero, telefono, correo_co
 
 
 --
--- Data for Name: taller; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: taller; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.taller (id_taller, nombre, telefono, localidad, calle, numero) FROM stdin;
@@ -1061,7 +1021,7 @@ COPY public.taller (id_taller, nombre, telefono, localidad, calle, numero) FROM 
 
 
 --
--- Data for Name: test; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: test; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.test (id_test, nota, dni) FROM stdin;
@@ -1075,7 +1035,7 @@ COPY public.test (id_test, nota, dni) FROM stdin;
 
 
 --
--- Data for Name: vehiculo; Type: TABLE DATA; Schema: public; Owner: ramirodifonti
+-- Data for Name: vehiculo; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.vehiculo (matricula, modelo, color, estado, id_sede, id_taller) FROM stdin;
@@ -1145,61 +1105,60 @@ COPY public.vehiculo (matricula, modelo, color, estado, id_sede, id_taller) FROM
 0000ACL	Mercedes Citan	Verde	Disponible	3	13
 0000ACM	Volkswagen Caddy	Blanco	Disponible	3	14
 0000ACN	Iveco Eurocargo	Azul	Disponible	3	15
-1000AAA	Mercedes Gama Actros	Gris	Disponible	1	1
 \.
 
 
 --
--- Name: contrato_id_contrato_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: contrato_id_contrato_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.contrato_id_contrato_seq', 29, true);
+SELECT pg_catalog.setval('public.contrato_id_contrato_seq', 28, true);
 
 
 --
--- Name: empresa_id_empresa_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: empresa_id_empresa_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.empresa_id_empresa_seq', 5, true);
 
 
 --
--- Name: informe_id_informe_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: informe_id_informe_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.informe_id_informe_seq', 6, true);
 
 
 --
--- Name: paquete_id_paquete_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: paquete_id_paquete_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.paquete_id_paquete_seq', 40, true);
 
 
 --
--- Name: sede_id_sede_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: sede_id_sede_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.sede_id_sede_seq', 3, true);
 
 
 --
--- Name: taller_id_taller_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: taller_id_taller_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.taller_id_taller_seq', 20, true);
 
 
 --
--- Name: test_id_test_seq; Type: SEQUENCE SET; Schema: public; Owner: ramirodifonti
+-- Name: test_id_test_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.test_id_test_seq', 6, true);
 
 
 --
--- Name: conduce conduce_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: conduce conduce_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conduce
@@ -1207,7 +1166,7 @@ ALTER TABLE ONLY public.conduce
 
 
 --
--- Name: conductor conductor_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: conductor conductor_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conductor
@@ -1215,7 +1174,7 @@ ALTER TABLE ONLY public.conductor
 
 
 --
--- Name: contrato contrato_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: contrato contrato_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contrato
@@ -1223,7 +1182,7 @@ ALTER TABLE ONLY public.contrato
 
 
 --
--- Name: empresa empresa_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: empresa empresa_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.empresa
@@ -1231,7 +1190,7 @@ ALTER TABLE ONLY public.empresa
 
 
 --
--- Name: encargado encargado_id_sede_key; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: encargado encargado_id_sede_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.encargado
@@ -1239,7 +1198,7 @@ ALTER TABLE ONLY public.encargado
 
 
 --
--- Name: encargado encargado_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: encargado encargado_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.encargado
@@ -1247,7 +1206,7 @@ ALTER TABLE ONLY public.encargado
 
 
 --
--- Name: envia envia_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: envia envia_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.envia
@@ -1255,7 +1214,7 @@ ALTER TABLE ONLY public.envia
 
 
 --
--- Name: informe informe_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: informe informe_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.informe
@@ -1263,7 +1222,7 @@ ALTER TABLE ONLY public.informe
 
 
 --
--- Name: paquete paquete_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: paquete paquete_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paquete
@@ -1271,7 +1230,7 @@ ALTER TABLE ONLY public.paquete
 
 
 --
--- Name: sede sede_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: sede sede_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sede
@@ -1279,7 +1238,7 @@ ALTER TABLE ONLY public.sede
 
 
 --
--- Name: taller taller_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: taller taller_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.taller
@@ -1287,7 +1246,7 @@ ALTER TABLE ONLY public.taller
 
 
 --
--- Name: test test_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: test test_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.test
@@ -1295,7 +1254,7 @@ ALTER TABLE ONLY public.test
 
 
 --
--- Name: vehiculo vehiculo_pkey; Type: CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: vehiculo vehiculo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.vehiculo
@@ -1303,112 +1262,112 @@ ALTER TABLE ONLY public.vehiculo
 
 
 --
--- Name: contrato trg_check_vehiculo_disponible; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: contrato trg_check_vehiculo_disponible; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trg_check_vehiculo_disponible BEFORE INSERT ON public.contrato FOR EACH ROW EXECUTE FUNCTION public.check_vehiculo_disponible();
 
 
 --
--- Name: contrato trg_verificar_solapamiento_contrato; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: contrato trg_verificar_solapamiento_contrato; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trg_verificar_solapamiento_contrato BEFORE INSERT ON public.contrato FOR EACH ROW EXECUTE FUNCTION public.verificar_solapamiento_contrato();
 
 
 --
--- Name: camion trigger_eliminar_camion_de_vehiculo; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: camion trigger_eliminar_camion_de_vehiculo; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_eliminar_camion_de_vehiculo BEFORE DELETE ON public.camion FOR EACH STATEMENT EXECUTE FUNCTION public.eliminar_de_vehiculo();
 
 
 --
--- Name: furgoneta trigger_eliminar_furgoneta_de_vehiculo; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: furgoneta trigger_eliminar_furgoneta_de_vehiculo; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_eliminar_furgoneta_de_vehiculo BEFORE DELETE ON public.furgoneta FOR EACH STATEMENT EXECUTE FUNCTION public.eliminar_de_vehiculo();
 
 
 --
--- Name: camion trigger_insertar_camion_en_vehiculo; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: camion trigger_insertar_camion_en_vehiculo; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_insertar_camion_en_vehiculo BEFORE INSERT ON public.camion FOR EACH ROW EXECUTE FUNCTION public.insertar_en_vehiculo();
 
 
 --
--- Name: furgoneta trigger_insertar_furgoneta_en_vehiculo; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: furgoneta trigger_insertar_furgoneta_en_vehiculo; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_insertar_furgoneta_en_vehiculo BEFORE INSERT ON public.furgoneta FOR EACH ROW EXECUTE FUNCTION public.insertar_en_vehiculo();
 
 
 --
--- Name: camion trigger_reasignar_camion; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: camion trigger_reasignar_camion; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_reasignar_camion AFTER DELETE ON public.camion FOR EACH ROW EXECUTE FUNCTION public.reasignar_camion();
 
 
 --
--- Name: camion trigger_reasignar_camion_en_taller; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: camion trigger_reasignar_camion_en_taller; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_reasignar_camion_en_taller AFTER UPDATE OF estado ON public.camion FOR EACH ROW EXECUTE FUNCTION public.reasignar_camion();
 
 
 --
--- Name: furgoneta trigger_reasignar_furgoneta; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: furgoneta trigger_reasignar_furgoneta; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_reasignar_furgoneta AFTER DELETE ON public.furgoneta FOR EACH ROW EXECUTE FUNCTION public.reasignar_furgoneta();
 
 
 --
--- Name: furgoneta trigger_reasignar_furgoneta_en_taller; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: furgoneta trigger_reasignar_furgoneta_en_taller; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_reasignar_furgoneta_en_taller AFTER UPDATE OF estado ON public.furgoneta FOR EACH ROW EXECUTE FUNCTION public.reasignar_furgoneta();
 
 
 --
--- Name: taller trigger_reasignar_taller; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: taller trigger_reasignar_taller; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_reasignar_taller BEFORE DELETE ON public.taller FOR EACH ROW EXECUTE FUNCTION public.reasignar_taller_a_vehiculos();
 
 
 --
--- Name: empresa trigger_verificar_sede_unica_empresa; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: empresa trigger_verificar_sede_unica_empresa; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_verificar_sede_unica_empresa BEFORE UPDATE ON public.empresa FOR EACH ROW EXECUTE FUNCTION public.verificar_sede_unica_empresa();
 
 
 --
--- Name: vehiculo trigger_verificar_sede_vehiculo; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: vehiculo trigger_verificar_sede_vehiculo; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_verificar_sede_vehiculo BEFORE INSERT OR UPDATE ON public.vehiculo FOR EACH ROW EXECUTE FUNCTION public.verificar_sede_vehiculo();
 
 
 --
--- Name: envia verifica_contrato; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: envia verifica_contrato; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER verifica_contrato BEFORE INSERT OR UPDATE ON public.envia FOR EACH ROW EXECUTE FUNCTION public.valida_envia_vehiculo();
 
 
 --
--- Name: conduce verifica_test; Type: TRIGGER; Schema: public; Owner: ramirodifonti
+-- Name: conduce verifica_test; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER verifica_test BEFORE INSERT OR UPDATE ON public.conduce FOR EACH ROW EXECUTE FUNCTION public.valida_test_conductor();
 
 
 --
--- Name: conduce conduce_dni_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: conduce conduce_dni_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conduce
@@ -1416,7 +1375,7 @@ ALTER TABLE ONLY public.conduce
 
 
 --
--- Name: conduce conduce_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: conduce conduce_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conduce
@@ -1424,7 +1383,7 @@ ALTER TABLE ONLY public.conduce
 
 
 --
--- Name: contrato contrato_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: contrato contrato_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contrato
@@ -1432,7 +1391,7 @@ ALTER TABLE ONLY public.contrato
 
 
 --
--- Name: contrato contrato_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: contrato contrato_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contrato
@@ -1440,7 +1399,7 @@ ALTER TABLE ONLY public.contrato
 
 
 --
--- Name: empresa empresa_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: empresa empresa_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.empresa
@@ -1448,7 +1407,7 @@ ALTER TABLE ONLY public.empresa
 
 
 --
--- Name: encargado encargado_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: encargado encargado_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.encargado
@@ -1456,7 +1415,7 @@ ALTER TABLE ONLY public.encargado
 
 
 --
--- Name: envia envia_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: envia envia_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.envia
@@ -1464,7 +1423,7 @@ ALTER TABLE ONLY public.envia
 
 
 --
--- Name: envia envia_id_paquete_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: envia envia_id_paquete_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.envia
@@ -1472,7 +1431,7 @@ ALTER TABLE ONLY public.envia
 
 
 --
--- Name: envia envia_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: envia envia_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.envia
@@ -1480,7 +1439,7 @@ ALTER TABLE ONLY public.envia
 
 
 --
--- Name: informe informe_id_taller_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: informe informe_id_taller_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.informe
@@ -1488,7 +1447,7 @@ ALTER TABLE ONLY public.informe
 
 
 --
--- Name: informe informe_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: informe informe_matricula_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.informe
@@ -1496,7 +1455,7 @@ ALTER TABLE ONLY public.informe
 
 
 --
--- Name: paquete paquete_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: paquete paquete_id_empresa_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paquete
@@ -1504,7 +1463,7 @@ ALTER TABLE ONLY public.paquete
 
 
 --
--- Name: test test_dni_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: test test_dni_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.test
@@ -1512,7 +1471,7 @@ ALTER TABLE ONLY public.test
 
 
 --
--- Name: vehiculo vehiculo_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: vehiculo vehiculo_id_sede_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.vehiculo
@@ -1520,7 +1479,7 @@ ALTER TABLE ONLY public.vehiculo
 
 
 --
--- Name: vehiculo vehiculo_id_taller_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ramirodifonti
+-- Name: vehiculo vehiculo_id_taller_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.vehiculo
