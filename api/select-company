@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seleccionar Empresa</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <h1>Seleccionar Empresa</h1>
+    <form method="GET" action="">
+        <label for="company">Elige una empresa:</label>
+        <select id="company" name="company" onchange="redirectToCompany(this.value)">
+            <option value="">-- Selecciona una empresa --</option>
+            {% for company in companies %}
+                <option value="/view-company/{{ company['id_empresa'] }}">{{ company['nombre'] }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <script>
+        function redirectToCompany(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+    </script>
+    <a href="/">Volver al inicio</a>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ViewCarTransit - Modificar Datos</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <h1>Modificar Datos</h1>
+    <form method="POST" action="/api/modify">
+        <label for="table">Selecciona la tabla:</label>
+        <select name="table" id="table">
+            <option value="sede">Sede</option>
+            <option value="empresa">Empresa</option>
+            <option value="paquete">Paquete</option>
+            <option value="vehiculo">Vehículo</option>
+            <option value="conductor">Conductor</option>
+        </select>
+        <br>
+        <label for="id">ID del registro a modificar:</label>
+        <input type="text" name="id" id="id">
+        <br>
+        <tex

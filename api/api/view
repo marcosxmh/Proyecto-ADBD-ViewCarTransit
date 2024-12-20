@@ -1,0 +1,23 @@
+const express = require('express');
+const router = express.Router();
+
+// Mock data for car transit views
+const carTransits = [
+  { id: 1, carModel: 'Toyota Camry', transitStatus: 'In Transit' },
+  { id: 2, carModel: 'Honda Accord', transitStatus: 'Delivered' },
+  { id: 3, carModel: 'Tesla Model 3', transitStatus: 'In Transit' }
+];
+
+// Get all car transits
+router.get('/cartransits', (req, res) => {
+  res.json(carTransits);
+});
+
+// Get a specific car transit by ID
+router.get('/cartransits/:id', (req, res) => {
+  const carTransit = carTransits.find(ct => ct.id === parseInt(req.params.id));
+  if (!carTransit) return res.status(404).send('The car transit with the given ID was not found.');
+  res.json(carTransit);
+});
+
+module.exports = router;
