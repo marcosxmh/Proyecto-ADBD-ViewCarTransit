@@ -1,6 +1,6 @@
 # VIEW CAR TRANSIT
 
-## 📌 Autores
+## 👥 Autores
 
 Nombre: Ramiro\
 Apellidos:Difonti Domé\
@@ -46,3 +46,7 @@ C:\> flask app.py run
 ```bash
 $ flask --app app.py run --host 0.0.0.0 --port 8080
 ```
+
+## 📝 Licencia
+
+[LICENSE](./LICENSE)
