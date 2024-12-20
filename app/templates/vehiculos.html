@@ -26,12 +26,20 @@
 
             <!-- Campo adicional: Portón (solo para Furgoneta) -->
             <div id="porton_field" style="display:none;">
-                <input type="text" name="porton" placeholder="¿Tiene portón lateral?" required>
+                <label for="porton">¿Tiene portón lateral?</label>
+                <select name="porton" id="¿Tiene portón?" required>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
             </div>
 
             <!-- Campo adicional: Trailer (solo para Camión) -->
             <div id="trailer_field" style="display:none;">
-                <input type="text" name="trailer" placeholder="¿Tiene trailer?" required>
+                <label for="porton">¿Tiene trailer?</label>
+                <select name="trailer" id="¿Tiene trailer?" required>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
             </div>
 
             <button type="submit">Agregar Vehículo</button>
