@@ -69,31 +69,114 @@ def empresas():
         if conn:
             conn.close()
 
+@app.route('/vehiculos', methods=['GET', 'POST'])
+def vehiculos():
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        if request.method == 'POST':
+            matricula = request.form['matricula']
+            modelo = request.form['modelo']
+            color = request.form['color']
+            estado = request.form['estado']
+            id_sede = request.form['id_sede']
+            id_taller = request.form['id_taller']
+            tipo = request.form['tipo_vehiculo']
+            
+            try:
+                if tipo == "furgoneta":
+                    porton_lateral = request.form['porton']
+                    if porton_lateral == "si":
+                        porton_lateral = True
+                    else:
+                        porton_lateral = False
+                    cur.execute(
+                        'INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral) '
+                        'VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
+                    )
+                else:
+                    trailer = request.form['trailer']
+                    if trailer == "si":
+                        trailer = True
+                    else:
+                        trailer = False
+                    cur.execute(
+                        'INSERT INTO CAMION (matricula, modelo, color, estado, id_sede, id_taller, tiene_trailer) '
+                        'VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (matricula, modelo, color, estado, id_sede, id_taller, trailer)
+                    )
+                conn.commit()
+                return redirect(url_for('vehiculos'))
+            
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
+
+        # Consultar todos los vehículos
+        cur.execute('SELECT * FROM vehiculo')
+        vehiculos = cur.fetchall()
+        cur.close()
+        conn.close()
+        if not vehiculos:
+            abort(404)
+
+        return render_template('vehiculos.html', vehiculos=vehiculos), 200  # OK
+
+    except DatabaseError as e:
+        abort(500)
+
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
 @app.route('/conductores', methods=['GET', 'POST'])
 def conductores():
-    conn = get_db_connection()
-    cur = conn.cursor()
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        telefono = request.form['telefono']
-        id_empresa = request.form['id_empresa']
+        if request.method == 'POST':
+            dni = request.form['dni']
+            nombre = request.form['nombre']
+            apellidos = request.form['apellidos']
+            licencia = request.form['licencia']
+            try:
+                cur.execute(
+                    'INSERT INTO conductor (dni, nombre, apellidos, licencia) VALUES (%s, %s, %s, %s)',
+                    (dni, nombre, apellidos, licencia)
+                )
+                conn.commit()
+                return redirect(url_for('conductores'))
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
 
-        cur.execute(
-            'INSERT INTO conductor (nombre, apellido, telefono, id_empresa) VALUES (%s, %s, %s, %s)',
-            (nombre, apellido, telefono, id_empresa)
-        )
-        conn.commit()
-        return redirect(url_for('conductores'))
+        # Consultar todos los vehículos
+        cur.execute('SELECT * FROM conductor')
+        conductores = cur.fetchall()
+        cur.close()
+        conn.close()
+        if not conductores:
+            abort(404)
 
-    cur.execute('SELECT * FROM conductor')
-    conductores = cur.fetchall()
-    cur.close()
-    conn.close()
+        return render_template('conductores.html', conductores=conductores), 200  # OK
 
-    return render_template('conductores.html', conductores=conductores)
+    except DatabaseError as e:
+        abort(500)
 
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 @app.route('/paquetes', methods=['GET', 'POST'])
 def paquetes():
@@ -186,74 +269,6 @@ def empresa_detalle(empresa_id):
     conn.close()
 
     return jsonify(empresa)
-
-
-@app.route('/vehiculos', methods=['GET', 'POST'])
-def vehiculos():
-    try:
-        # Conectar con la base de datos
-        conn = get_db_connection()
-        cur = conn.cursor()
-
-        if request.method == 'POST':
-            matricula = request.form['matricula']
-            modelo = request.form['modelo']
-            color = request.form['color']
-            estado = request.form['estado']
-            id_sede = request.form['id_sede']
-            id_taller = request.form['id_taller']
-            tipo = request.form['tipo_vehiculo']
-            
-            try:
-                if tipo == "furgoneta":
-                    porton_lateral = request.form['porton']
-                    if porton_lateral == "si":
-                        porton_lateral = True
-                    else:
-                        porton_lateral = False
-                    cur.execute(
-                        'INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral) '
-                        'VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                        (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
-                    )
-                else:
-                    trailer = request.form['trailer']
-                    if trailer == "si":
-                        trailer = True
-                    else:
-                        trailer = False
-                    cur.execute(
-                        'INSERT INTO CAMION (matricula, modelo, color, estado, id_sede, id_taller, tiene_trailer) '
-                        'VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                        (matricula, modelo, color, estado, id_sede, id_taller, trailer)
-                    )
-                conn.commit()
-                return redirect(url_for('vehiculos'))
-            
-            except DatabaseError as e:
-                conn.rollback()
-                abort(500)
-
-        # Consultar todos los vehículos
-        cur.execute('SELECT * FROM vehiculo')
-        vehiculos = cur.fetchall()
-        cur.close()
-        conn.close()
-        if not vehiculos:
-            abort(404)
-
-        return render_template('vehiculos.html', vehiculos=vehiculos), 200  # OK
-
-    except DatabaseError as e:
-        abort(500)
-
-    finally:
-        # Asegurarse de cerrar la conexión a la base de datos
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
-
 
 @app.route('/vehiculos/<string:matricula>', methods=['GET', 'PUT', 'DELETE'])
 def vehiculo_detalle(matricula):
