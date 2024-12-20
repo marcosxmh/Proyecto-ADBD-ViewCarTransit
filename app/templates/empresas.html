@@ -10,16 +10,22 @@
     <h1>Lista de Empresas</h1>
     <form method="POST">
         <input type="text" name="nombre" placeholder="Nombre" required>
-        <input type="text" name="direccion" placeholder="Dirección" required>
+        <input type="text" name="tipo_empresa" placeholder="Tipo empresa" required>
         <input type="text" name="telefono" placeholder="Teléfono">
+        <input type="text" name="correo" placeholder="Correo">
+        <input type="text" name="id_sede" placeholder="ID Sede" required>
+        
         <button type="submit">Agregar Empresa</button>
     </form>
     <table>
         <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Dirección</th>
+            <th>Tipo Empresa</th>
             <th>Teléfono</th>
+            <th>Correo</th>
+            <th>ID Sede</th>
+            
         </tr>
         {% for empresa in empresas %}
         <tr>
@@ -27,6 +33,8 @@
             <td>{{ empresa[1] }}</td>
             <td>{{ empresa[2] }}</td>
             <td>{{ empresa[3] }}</td>
+            <td>{{ empresa[4] }}</td>
+            <td>{{ empresa[5] }}</td>
         </tr>
         {% endfor %}
     </table>

@@ -7,10 +7,17 @@
   <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Bienvenido a la API de Gestión</h1>
-    <a href="{{ url_for('vehiculos') }}">Gestionar Vehículos</a>
-    <a href="{{ url_for('empresas') }}">Gestionar Empresas</a>
-</div>
+  
+  <div class="container" style="text-align: center;">
+    <h1>Bienvenido a la ViewCarTransit</h1>
+    <div>
+      <img src="../static/logo.png" alt="Logo de ViewCarTransit" style="width: 400px; height: 200px;">
+    </div>
+    <button onclick="location.href='{{ url_for('empresas') }}'">Gestionar Empresas</button>
+    <button onclick="location.href='{{ url_for('vehiculos') }}'">Gestionar Vehículos</button>
+    <button onclick="location.href='{{ url_for('conductores') }}'">Gestionar Conductores</button>
+    <button onclick="location.href='{{ url_for('paquetes') }}'">Gestionar Paquetes</button>
+  </div>
+
 </body>
 </html>

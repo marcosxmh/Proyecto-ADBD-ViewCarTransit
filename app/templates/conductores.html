@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Conductores</title>
+  <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Gestión de Conductores</h1>
+  </header>
+  <main>
+    <section>
+      <h2>Agregar Conductor</h2>
+      <form id="add-driver-form">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="license">Licencia:</label>
+        <input type="text" id="license" name="license" required>
+        <button type="submit">Agregar</button>
+      </form>
+    </section>
+    <section>
+      <h2>Lista de Conductores</h2>
+      <table id="drivers-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Licencia</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Aquí se agregarán los conductores -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+  <script src="scripts.js"></script>
+</body>
+</html>
