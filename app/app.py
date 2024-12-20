@@ -180,32 +180,47 @@ def conductores():
 
 @app.route('/paquetes', methods=['GET', 'POST'])
 def paquetes():
-    conn = get_db_connection()
-    cur = conn.cursor()
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-    if request.method == 'POST':
-        descripcion = request.form['descripcion']
-        peso = request.form['peso']
-        empresas = request.form['empresas']
+        if request.method == 'POST':
+            descripcion = request.form['descripcion']
+            peso = request.form['peso']
+            empresas = request.form['empresa']
+            try:
+                cur.execute(
+                    'INSERT INTO paquete (descripcion, peso, id_empresa) '
+                    'VALUES (%s, %s, %s)',
+                    (descripcion, peso, empresas)
+                )
+                conn.commit()
+                return redirect(url_for('paquetes'))
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
 
-        # Validar campos
-        if not descripcion or not destinatario:
-            return "Campos obligatorios faltantes", 400
+        # Consultar todos los vehículos
+        cur.execute('SELECT * FROM paquete')
+        paquetes = cur.fetchall()
+        cur.close()
+        conn.close()
+        if not paquetes:
+            abort(404)
 
-        cur.execute(
-            'INSERT INTO paquete (descripcion, peso, empresa) '
-            'VALUES (%s, %s, %s, %s, %s)',
-            (descripcion, peso, empresas)
-        )
-        conn.commit()
-        return redirect(url_for('paquetes'))
+        return render_template('paquetes.html', paquetes=paquetes), 200  # OK
 
-    cur.execute('SELECT * FROM paquete')
-    paquetes = cur.fetchall()
-    cur.close()
-    conn.close()
+    except DatabaseError as e:
+        abort(500)
 
-    return render_template('paquetes.html', paquetes=paquetes)
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
 
 @app.route('/paquetes/<int:paquete_id>', methods=['GET', 'PUT', 'DELETE'])
 def paquete_detalle(paquete_id):
