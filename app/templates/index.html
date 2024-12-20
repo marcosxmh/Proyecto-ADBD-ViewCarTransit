@@ -9,7 +9,7 @@
 <body>
   
   <div class="container" style="text-align: center;">
-    <h1>Bienvenido a la ViewCarTransit</h1>
+    <h1>Bienvenido aW ViewCarTransit</h1>
     <div>
       <img src="../static/logo.png" alt="Logo de ViewCarTransit" style="width: 400px; height: 200px;">
     </div>
@@ -17,6 +17,8 @@
     <button onclick="location.href='{{ url_for('vehiculos') }}'">Gestionar Vehículos</button>
     <button onclick="location.href='{{ url_for('conductores') }}'">Gestionar Conductores</button>
     <button onclick="location.href='{{ url_for('paquetes') }}'">Gestionar Paquetes</button>
+    <button onclick="location.href='{{ url_for('mostrar_empresas') }}'">Modificar envios</button>
+    <button onclick="location.href='{{ url_for('delete_vehiculo') }}'">Eliminar vehículos</button>
   </div>
 
 </body>

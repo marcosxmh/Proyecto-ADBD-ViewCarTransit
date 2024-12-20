@@ -103,7 +103,7 @@ table tr:hover {
 
 /* Contenedores */
 .container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 20px;
   background: white;
@@ -136,4 +136,36 @@ table tr:hover {
 .error-description {
   font-size: 16px;
   color: #555;
+}
+/* Establece el contenedor de las tablas como un contenedor flexible */
+.table-container {
+  display: flex;                /* Usa flexbox para colocar los elementos en línea */
+  justify-content: space-between; /* Espacio entre las tablas */
+  align-items: flex-start;      /* Alineación superior */
+  gap: 20px;                    /* Espacio entre las tablas */
+}
+
+/* Estilo común para las tablas */
+.double-table {
+  width: 45%;                   /* Define el ancho de las tablas */
+  border-collapse: collapse;    /* Colapsa los bordes de las celdas */
+  margin: 0;                    /* Elimina margen extra */
+}
+
+caption {
+  font-size: 18px;              /* Tamaño de la fuente */
+  font-weight: bold;            /* Negrita para el título */
+  text-align: center;           /* Centrado del título */
+  margin-bottom: 10px;          /* Espacio debajo del título */
+}
+
+/* Estilo para las celdas y las cabeceras */
+th, td {
+  border: 1px solid #ddd;       /* Borde gris claro para celdas */
+  padding: 8px;                 /* Espaciado dentro de las celdas */
+  text-align: left;             /* Alineación de texto */
+}
+
+th {
+  background-color: #f2f2f2;    /* Color de fondo para las cabeceras */
 }

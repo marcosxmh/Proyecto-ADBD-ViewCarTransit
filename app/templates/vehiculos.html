@@ -44,27 +44,62 @@
 
             <button type="submit">Agregar Vehículo</button>
         </form>
-        
-        <table>
-            <tr>
-                <th>Matrícula</th>
-                <th>Modelo</th>
-                <th>Color</th>
-                <th>Estado</th>
-                <th>ID Sede</th>
-                <th>ID Taller</th>
-            </tr>
-            {% for vehiculo in vehiculos %}
-            <tr>
-                <td>{{ vehiculo[0] }}</td>
-                <td>{{ vehiculo[1] }}</td>
-                <td>{{ vehiculo[2] }}</td>
-                <td>{{ vehiculo[3] }}</td>
-                <td>{{ vehiculo[4] }}</td>
-                <td>{{ vehiculo[5] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="table-container">
+            <table class ="double-table">
+                <caption>Furgonetas</caption>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Modelo</th>
+                    <th>Color</th>
+                    <th>Estado</th>
+                    <th>Nombre Sede</th>
+                    <th>ID Sede</th>
+                    <th>Nombre Taller</th>
+                    <th>ID Taller</th>
+                    <th>Portón</th>
+                </tr>
+                {% for furgoneta in furgonetas %}
+                <tr>
+                    <td>{{ furgoneta[0] }}</td>
+                    <td>{{ furgoneta[1] }}</td>
+                    <td>{{ furgoneta[2] }}</td>
+                    <td>{{ furgoneta[3] }}</td>
+                    <td>{{ furgoneta[4] }}</td>
+                    <td>{{ furgoneta[5] }}</td>
+                    <td>{{ furgoneta[6] }}</td>
+                    <td>{{ furgoneta[7] }}</td>
+                    <td>{{ furgoneta[8] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <table class="double-table">
+                <caption>Camiones</caption>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Modelo</th>
+                    <th>Color</th>
+                    <th>Estado</th>
+                    <th>Nombre Sede</th>
+                    <th>ID Sede</th>
+                    <th>Nombre Taller</th>
+                    <th>ID Taller</th>
+                    <th>Trailer</th>
+                </tr>
+                {% for camion in camiones %}
+                <tr>
+                    <td>{{ camion[0] }}</td>
+                    <td>{{ camion[1] }}</td>
+                    <td>{{ camion[2] }}</td>
+                    <td>{{ camion[3] }}</td>
+                    <td>{{ camion[4] }}</td>
+                    <td>{{ camion[5] }}</td>
+                    <td>{{ camion[6] }}</td>
+                    <td>{{ camion[7] }}</td>
+                    <td>{{ camion[8] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>        
     </div>
 
     <script>

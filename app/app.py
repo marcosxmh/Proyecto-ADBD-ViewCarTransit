@@ -118,14 +118,22 @@ def vehiculos():
                 abort(500)
 
         # Consultar todos los vehículos
-        cur.execute('SELECT * FROM vehiculo')
-        vehiculos = cur.fetchall()
+        cur.execute('SELECT v.matricula, v.modelo, v.color, v.estado, s.nombre, v.id_sede, t.nombre, v.id_taller, v.porton_lateral \
+                    FROM furgoneta v \
+                    JOIN TALLER t ON v.id_taller = t.id_taller \
+                    JOIN SEDE s ON v.id_sede = s.id_sede')
+        furgonetas = cur.fetchall()
+        cur.execute('SELECT v.matricula, v.modelo, v.color, v.estado, s.nombre, v.id_sede, t.nombre, v.id_taller, v.tiene_trailer \
+                    FROM camion v \
+                    JOIN TALLER t ON v.id_taller = t.id_taller \
+                    JOIN SEDE s ON v.id_sede = s.id_sede')
+        camiones = cur.fetchall()
         cur.close()
         conn.close()
         if not vehiculos:
             abort(404)
 
-        return render_template('vehiculos.html', vehiculos=vehiculos), 200  # OK
+        return render_template('vehiculos.html', furgonetas=furgonetas, camiones=camiones), 200  # OK
 
     except DatabaseError as e:
         abort(500)
@@ -204,7 +212,9 @@ def paquetes():
                 abort(500)
 
         # Consultar todos los vehículos
-        cur.execute('SELECT * FROM paquete')
+        cur.execute('SELECT p.id_paquete, p.descripcion, p.peso, e.nombre, p.id_empresa \
+                    FROM paquete p \
+                    JOIN empresa e ON p.id_empresa = e.id_empresa')
         paquetes = cur.fetchall()
         cur.close()
         conn.close()
@@ -223,100 +233,170 @@ def paquetes():
         if conn:
             conn.close()
 
+@app.route('/envia/<int:id_empresa>', methods=['GET', 'POST'])
+def manage_envia(id_empresa):
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-@app.route('/paquetes/<int:paquete_id>', methods=['GET', 'PUT', 'DELETE'])
-def paquete_detalle(paquete_id):
+        if request.method == 'POST':
+            matricula = request.form['matricula']
+            id_paquete = request.form['id_paquete']
+            destino = request.form['destino']
+            fecha = request.form['fecha']
+            cur.execute('SELECT e.matricula, e.destino, e.fecha \
+            FROM envia e \
+            WHERE e.id_paquete = %s', (id_paquete,))
+            current_data = cur.fetchone()
+
+            # Si algún campo está vacío o es NULL, mantener el valor actual
+            if not matricula:
+                matricula = current_data[0]
+            if not destino:
+                destino = current_data[1]
+            if not fecha:
+                fecha = current_data[2]
+
+            cur.execute(
+                'UPDATE ENVIA \
+                    SET matricula = %s, destino = %s, fecha = %s \
+                    WHERE id_paquete = %s',
+                (matricula, destino, fecha, id_paquete,)
+            )
+            try:
+                # Obtener los valores actuales del paquete
+                cur.execute('SELECT e.matricula, e.destino, e.fecha \
+                            FROM envia e \
+                            WHERE e.id_paquete = %s', (id_paquete,))
+                current_data = cur.fetchone()
+
+                # Si algún campo está vacío o es NULL, mantener el valor actual
+                if not matricula:
+                    matricula = current_data[0]
+                if not destino:
+                    destino = current_data[1]
+                if not fecha:
+                    fecha = current_data[2]
+
+                cur.execute(
+                    'UPDATE ENVIA \
+                     SET matricula = %s, destino = %s, fecha = %s \
+                     WHERE id_paquete = %s',
+                    (matricula, destino, fecha, id_paquete,)
+                )
+                conn.commit()
+                return redirect(url_for('manage_envia', id_empresa=id_empresa))
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
+
+        # Consultar todos los vehículos
+        cur.execute('SELECT e.matricula, e.id_paquete, e.destino, e.fecha \
+                    FROM envia e \
+                    WHERE e.id_empresa = %s', (id_empresa,))
+        paquetes = cur.fetchall()
+        cur.close()
+        conn.close()
+        if not paquetes:
+            abort(404)
+
+        return render_template('envia.html', paquetes=paquetes), 200
+    
+    except DatabaseError as e:
+        abort(500)
+
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()        
+
+# Endpoint para listar todas las empresas
+@app.route('/mostrar_empresas', methods=['GET'])
+def mostrar_empresas():
     conn = get_db_connection()
     cur = conn.cursor()
-
-    if request.method == 'PUT':
-        datos = request.get_json()
-        cur.execute(
-            'UPDATE paquete SET descripcion = %s, peso = %s, dimensiones = %s, destinatario = %s, estado = %s '
-            'WHERE id = %s',
-            (datos['descripcion'], datos['peso'], datos['dimensiones'], datos['destinatario'], datos['estado'], paquete_id)
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'mensaje': 'Paquete actualizado'}), 200
-
-    elif request.method == 'DELETE':
-        cur.execute('DELETE FROM paquete WHERE id = %s', (paquete_id,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'mensaje': 'Paquete eliminado'}), 200
-
-    cur.execute('SELECT * FROM paquete WHERE id = %s', (paquete_id,))
-    paquete = cur.fetchone()
+    
+    # Obtener todas las empresas
+    cur.execute('SELECT id_empresa, nombre FROM EMPRESA')
+    empresas = cur.fetchall()
+    
     cur.close()
     conn.close()
 
-    return jsonify(paquete)
+    # Renderizar la plantilla con las empresas
+    return render_template('empresas_list.html', empresas=empresas)
 
+@app.route('/delete_vehiculo', methods=('GET', 'POST'))
+def delete_vehiculo():
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
 
+        if request.method == 'POST':
+            matricula = request.form['matricula']
+            tipo = request.form['tipo_vehiculo']
+            try:
+                if tipo == "furgoneta":
+                    cur.execute(
+                        'DELETE FROM FURGONETA WHERE matricula = %s',
+                        (matricula,)
+                    )
+                else:
+                    cur.execute(
+                        'DELETE FROM CAMION WHERE matricula = %s',
+                        (matricula,)
+                    )
+                conn.commit()
+                return redirect(url_for('delete_vehiculo'))
+            
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
 
-@app.route('/empresas/<int:empresa_id>', methods=['GET', 'PUT', 'DELETE'])
-def empresa_detalle(empresa_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    if request.method == 'PUT':
-        datos = request.get_json()
-        cur.execute(
-            'UPDATE empresa SET nombre = %s, direccion = %s, telefono = %s WHERE id = %s',
-            (datos['nombre'], datos['direccion'], datos['telefono'], empresa_id)
-        )
-        conn.commit()
+        # Consultar todos los vehículos
+        cur.execute('SELECT v.matricula, v.modelo, v.color, v.estado, s.nombre, v.id_sede, t.nombre, v.id_taller, v.porton_lateral \
+                    FROM furgoneta v \
+                    JOIN TALLER t ON v.id_taller = t.id_taller \
+                    JOIN SEDE s ON v.id_sede = s.id_sede')
+        furgonetas = cur.fetchall()
+        cur.execute('SELECT v.matricula, v.modelo, v.color, v.estado, s.nombre, v.id_sede, t.nombre, v.id_taller, v.tiene_trailer \
+                    FROM camion v \
+                    JOIN TALLER t ON v.id_taller = t.id_taller \
+                    JOIN SEDE s ON v.id_sede = s.id_sede')
+        camiones = cur.fetchall()
         cur.close()
         conn.close()
-        return jsonify({'mensaje': 'Empresa actualizada'}), 200
+        if not vehiculos:
+            abort(404)
 
-    elif request.method == 'DELETE':
-        cur.execute('DELETE FROM empresa WHERE id = %s', (empresa_id,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'mensaje': 'Empresa eliminada'}), 200
+        return render_template('delete_vehiculo.html', furgonetas=furgonetas, camiones=camiones), 200  # OK
 
-    cur.execute('SELECT * FROM empresa WHERE id = %s', (empresa_id,))
-    empresa = cur.fetchone()
-    cur.close()
-    conn.close()
+    except DatabaseError as e:
+        abort(500)
 
-    return jsonify(empresa)
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
-@app.route('/vehiculos/<string:matricula>', methods=['GET', 'PUT', 'DELETE'])
-def vehiculo_detalle(matricula):
-    conn = get_db_connection()
-    cur = conn.cursor()
 
-    if request.method == 'PUT':
-        datos = request.get_json()
-        cur.execute(
-            'UPDATE vehiculo SET modelo = %s, color = %s, estado = %s, id_sede = %s, id_taller = %s '
-            'WHERE matricula = %s',
-            (datos['modelo'], datos['color'], datos['estado'], datos['id_sede'], datos['id_taller'], matricula)
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'mensaje': 'Vehículo actualizado'}), 200
 
-    elif request.method == 'DELETE':
-        cur.execute('DELETE FROM vehiculo WHERE matricula = %s', (matricula,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'mensaje': 'Vehículo eliminado'}), 200
 
-    cur.execute('SELECT * FROM vehiculo WHERE matricula = %s', (matricula,))
-    vehiculo = cur.fetchone()
-    cur.close()
-    conn.close()
 
-    return jsonify(vehiculo)
+
+
+
+
+
+
+
+
 
 # Errores
 @app.errorhandler(400)

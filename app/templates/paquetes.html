@@ -20,7 +20,8 @@
                 <th>ID</th>
                 <th>Descripción</th>
                 <th>Peso</th>
-                <th>Empresa</th>
+                <th>Nombre Empresa</th>
+                <th>ID Empresa</th>
             </tr>
             {% for paquete in paquetes %}
             <tr>
@@ -28,6 +29,7 @@
                 <td>{{ paquete[1] }}</td>
                 <td>{{ paquete[2] }}</td>
                 <td>{{ paquete[3] }}</td>
+                <td>{{ paquete[4] }}</td>
             </tr>
             {% endfor %}
         </table>
