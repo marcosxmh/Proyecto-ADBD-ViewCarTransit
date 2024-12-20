@@ -110,3 +110,30 @@ table tr:hover {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.error-container {
+  text-align: center;
+  max-width: 600px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-code {
+  font-size: 96px;
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 0;
+}
+
+.error-message {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.error-description {
+  font-size: 16px;
+  color: #555;
+}

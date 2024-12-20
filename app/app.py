@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, abort, render_template, request, redirect, url_for, jsonify
 import psycopg2
+from psycopg2 import DatabaseError
 
 # Configuración inicial
 app = Flask(__name__)
@@ -10,8 +11,9 @@ def get_db_connection():
         host='localhost',
         database='viewcartransit',
         user='postgres',
-        password='1234'
+        password='ramirodifonti'
     )
+
 
 # Rutas para la API
 @app.route('/')
@@ -20,57 +22,52 @@ def index():
 
 @app.route('/empresas', methods=['GET', 'POST'])
 def empresas():
-    
-    conn = get_db_connection()
-    cur = conn.cursor()
+    try:
+        # Conectar con la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        tipo = request.form['tipo_empresa']
-        telefono = request.form['telefono']
-        correo = request.form['correo_contacto']
-        id_sede = request.form['id_sede']
-        
-        cur.execute(
-            'INSERT INTO EMPRESA (nombre, tipo_empresa, telefono, correo_contacto, id_sede) VALUES (%s, %s, %s, %s, %s)',
-            (nombre, tipo, telefono, correo, id_sede)
-        )
-        conn.commit()
-        return redirect(url_for('empresas.html'))
+        if request.method == 'POST':
+            # Capturar los datos del formulario
+            nombre = request.form.get('nombre')
+            tipo = request.form.get('tipo_empresa')
+            telefono = request.form.get('telefono')
+            correo = request.form.get('correo_contacto')
+            id_sede = request.form.get('id_sede')
 
-    cur.execute('SELECT * FROM EMPRESA')
-    empresas = cur.fetchall()
-    cur.close()
-    conn.close()
+            try:
+                # Insertar los datos en la tabla EMPRESA
+                cur.execute(
+                    '''
+                    INSERT INTO EMPRESA (nombre, tipo_empresa, telefono, correo_contacto, id_sede)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ''',
+                    (nombre, tipo, telefono, correo, id_sede)
+                )
+                conn.commit()
+                return redirect(url_for('empresas'))
+            except DatabaseError as e:
+                conn.rollback()
+                abort(500)
 
-    return render_template('empresas.html', empresas=empresas)
+        # Consultar todas las empresas
+        cur.execute('SELECT * FROM EMPRESA')
+        empresas = cur.fetchall()
 
+        if not empresas:
+            abort(404)
 
+        return render_template('empresas.html', empresas=empresas), 200  # OK
 
+    except DatabaseError as e:
+        abort(500)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    finally:
+        # Asegurarse de cerrar la conexión a la base de datos
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 @app.route('/conductores', methods=['GET', 'POST'])
 def conductores():
@@ -196,6 +193,7 @@ def vehiculos():
     conn = get_db_connection()
     cur = conn.cursor()
 
+
     if request.method == 'POST':
         matricula = request.form['matricula']
         modelo = request.form['modelo']
@@ -203,12 +201,22 @@ def vehiculos():
         estado = request.form['estado']
         id_sede = request.form['id_sede']
         id_taller = request.form['id_taller']
-        
-        cur.execute(
-            'INSERT INTO vehiculo (matricula, modelo, color, estado, id_sede, id_taller) '
-            'VALUES (%s, %s, %s, %s, %s, %s)',
-            (matricula, modelo, color, estado, id_sede, id_taller)
-        )
+        tipo = request.form['tipo_vehiculo']
+
+        if tipo == "furgoneta":
+            porton_lateral = request.form['porton']
+            cur.execute(
+                'INSERT INTO FURGONETA (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral) '
+                'VALUES (%s, %s, %s, %s, %s, %s)',
+                (matricula, modelo, color, estado, id_sede, id_taller, porton_lateral)
+            )
+        else:
+            trailer = request.form['trailer']
+            cur.execute(
+                'INSERT INTO CAMION (matricula, modelo, color, estado, id_sede, id_taller, tiene_trailer) '
+                'VALUES (%s, %s, %s, %s, %s, %s)',
+                (matricula, modelo, color, estado, id_sede, id_taller, trailer)
+            )
         conn.commit()
         return redirect(url_for('vehiculos'))
 
@@ -249,6 +257,28 @@ def vehiculo_detalle(matricula):
     conn.close()
 
     return jsonify(vehiculo)
+
+# Errores
+@app.errorhandler(400)
+def bad_request(error):
+    return render_template('error.html', 
+                           error_code=400, 
+                           error_message="Bad Request", 
+                           error_description="The server could not understand the request."), 400
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html', 
+                           error_code=404, 
+                           error_message="Page Not Found", 
+                           error_description="The page you are looking for does not exist."), 404
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('error.html', 
+                           error_code=500, 
+                           error_message="Internal Server Error", 
+                           error_description="Something went wrong on our end. Please try again later."), 500
 
 # Inicio de la aplicación
 if __name__ == '__main__':

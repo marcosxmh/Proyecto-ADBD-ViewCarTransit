@@ -7,37 +7,75 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Lista de Vehículos</h1>
-    <form method="POST">
-        <input type="text" name="matricula" placeholder="Matrícula" required>
-        <input type="text" name="modelo" placeholder="Modelo" required>
-        <input type="text" name="color" placeholder="Color">
-        <input type="text" name="estado" placeholder="Estado">
-        <input type="number" name="id_sede" placeholder="ID Sede" required>
-        <input type="number" name="id_taller" placeholder="ID Taller">
-        <button type="submit">Agregar Vehículo</button>
-    </form>
-    <table>
-        <tr>
-            <th>Matrícula</th>
-            <th>Modelo</th>
-            <th>Color</th>
-            <th>Estado</th>
-            <th>ID Sede</th>
-            <th>ID Taller</th>
-        </tr>
-        {% for vehiculo in vehiculos %}
-        <tr>
-            <td>{{ vehiculo[0] }}</td>
-            <td>{{ vehiculo[1] }}</td>
-            <td>{{ vehiculo[2] }}</td>
-            <td>{{ vehiculo[3] }}</td>
-            <td>{{ vehiculo[4] }}</td>
-            <td>{{ vehiculo[5] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+    <div class="container">
+        <h1>Lista de Vehículos</h1>
+        <form method="POST">
+            <input type="text" name="matricula" placeholder="Matrícula" required>
+            <input type="text" name="modelo" placeholder="Modelo" required>
+            <input type="text" name="color" placeholder="Color">
+            <input type="text" name="estado" placeholder="Estado" required>
+            <input type="number" name="id_sede" placeholder="ID Sede" required>
+            <input type="number" name="id_taller" placeholder="ID Taller" required>
+            
+            <!-- Selector de tipo de vehículo -->
+            <select id="tipo_vehiculo" name="tipo_vehiculo" required>
+                <option value="">Selecciona el tipo</option>
+                <option value="furgoneta">Furgoneta</option>
+                <option value="camion">Camión</option>
+            </select>
+
+            <!-- Campo adicional: Portón (solo para Furgoneta) -->
+            <div id="porton_field" style="display:none;">
+                <input type="text" name="porton" placeholder="¿Tiene portón lateral?" required>
+            </div>
+
+            <!-- Campo adicional: Trailer (solo para Camión) -->
+            <div id="trailer_field" style="display:none;">
+                <input type="text" name="trailer" placeholder="¿Tiene trailer?" required>
+            </div>
+
+            <button type="submit">Agregar Vehículo</button>
+        </form>
+        
+        <table>
+            <tr>
+                <th>Matrícula</th>
+                <th>Modelo</th>
+                <th>Color</th>
+                <th>Estado</th>
+                <th>ID Sede</th>
+                <th>ID Taller</th>
+            </tr>
+            {% for vehiculo in vehiculos %}
+            <tr>
+                <td>{{ vehiculo[0] }}</td>
+                <td>{{ vehiculo[1] }}</td>
+                <td>{{ vehiculo[2] }}</td>
+                <td>{{ vehiculo[3] }}</td>
+                <td>{{ vehiculo[4] }}</td>
+                <td>{{ vehiculo[5] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        // Función para mostrar campos adicionales según el tipo de vehículo
+        document.getElementById('tipo_vehiculo').addEventListener('change', function() {
+            var tipo = this.value;
+            
+            // Ocultar ambos campos por defecto
+            document.getElementById('porton_field').style.display = 'none';
+            document.getElementById('trailer_field').style.display = 'none';
+            
+            // Mostrar el campo correspondiente según la opción seleccionada
+            if (tipo === 'furgoneta') {
+                document.getElementById('porton_field').style.display = 'block';
+            } else if (tipo === 'camion') {
+                document.getElementById('trailer_field').style.display = 'block';
+            }
+        });
+    </script>
 </body>
+
 </html>
