@@ -19,10 +19,12 @@ E-mail: alu0101211206@ull.edu.es
 
 ## 🔨 Diagrama Entidad Relacion
 
+![Modelo ER_ViewCarTransit drawio](https://github.com/user-attachments/assets/483e8a93-5a9b-4eb7-b3fb-4f6405d00a6a)
 
 
 ## 🔧 Diagrama Relacional
 
+![Modelo relacional_ViewCarTransit drawio](https://github.com/user-attachments/assets/5805ae1f-d4f9-48d2-8701-c7546002b846)
 
 
 ## ⚡️ Ejecución del Script
