@@ -51,7 +51,9 @@ def empresas():
                 abort(500)
 
         # Consultar todas las empresas
-        cur.execute('SELECT * FROM EMPRESA')
+        cur.execute('SELECT id_empresa, empresa.nombre, tipo_empresa, empresa.telefono, empresa.correo_contacto, sede.nombre, empresa.id_sede \
+                     FROM EMPRESA empresa \
+                     JOIN SEDE sede ON empresa.id_sede = sede.id_sede')
         empresas = cur.fetchall()
 
         if not empresas:
